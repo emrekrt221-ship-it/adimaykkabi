@@ -1,23 +1,43 @@
 # Session handoff — 2026-10-20
 
-Repository: emrekrt221-ship-it/adimaykkabi (main).
+Repository: https://github.com/emrekrt221-ship-it/adimaykkabi
+Default branch: `main`
+Current work branch: `feat/mobile-storefront-foundation`
 
-## Product decisions
-ADIM AYAKKABI footwear ecommerce; mobile-first WooCommerce with MySQL/HPOS, black/orange theme, no Cloudflare initially, physical store and online stock shared by size/color. Start with low costs and professional performance targets.
+## Instruction for next ChatGPT conversation
+1. Use GitHub connector to read the **live repo state**, not remembered progress.
+2. Read `AGENTS.md`, `docs/MASTER_PLAN.md`, `docs/DECISIONS.md`, `docs/ROADMAP.md`, `docs/STATUS.md`, `docs/RELEASE_CHECKLIST.md`, then this file.
+3. Inspect current branch, open PRs and GitHub Actions/checks; never assume a PR is merged.
+4. Continue the next unfinished task; prefer small reviewed PRs. Do not overwrite changes made by others.
+5. Run tests, record exact results and update STATUS + SESSION_HANDOFF before stopping.
+6. No promise of autonomous background execution: another chat continues only when user opens it and requests continuation.
 
-## Completed
-GitHub main initialized with README, AGENTS, docs/MASTER_PLAN.md, ROADMAP.md, DECISIONS.md, STATUS.md, DEVELOPMENT.md, this handoff, .gitignore and theme files in wp-content/themes/adim: style.css, functions.php, header.php, footer.php, front-page.php, index.php.
+## Invariants and decisions
+- Single footwear store in Turkey, physical stock shared with ecommerce by product/color/size.
+- Mobile-first WooCommerce + MySQL/HPOS, minimal theme + isolated plugin; no Cloudflare in v1.
+- Colors black #151515, orange #F57C00, off-white #F7F7F5.
+- Payment through approved provider; never store card data/production credentials in Git.
+- Only legally authorized goods can be published and sold. Counterfeit trademarked shoes cannot go live. Payment approval, legal/ETBIS and privacy gates block launch.
+- Prior full plan: ADIM AYAKKABI E-ticaret Ana Plan v1.0 (20 Oct 2026); `docs/MASTER_PLAN.md` and `docs/ROADMAP.md` are the repo canonical synopsis.
 
-## Verification
-GitHub writes succeeded. No runtime, PHP lint, WordPress browser test or checkout test has been performed. Do not describe storefront as production-ready.
+## Work completed on branch
+- Updated theme: `functions.php`, `header.php`, `front-page.php`, `footer.php`.
+- New files: `assets/css/storefront.css`, `assets/js/navigation.js`, `woocommerce.php`, `page.php`.
+- Added prototype `wp-content/plugins/adim-operations/adim-operations.php` (manual product authorization flag, Woo purchasability and ordinary shop query restrictions). **Do not treat as proven airtight.**
+- Added `.github/workflows/quality.yml` (PHP lint + JS syntax), `docs/RELEASE_CHECKLIST.md`.
+- Updated documentation and handoff for multi-chat continuity.
 
-## Next tasks
-1. Read AGENTS.md and all docs; inspect current repo.
-2. Set up local WordPress/WooCommerce test environment; PHP lint theme.
-3. Implement proper WooCommerce template integration, mobile navigation and product cards; test accessibility.
-4. Build physical store sale stock workflow, verify size-level stock and concurrency.
-5. Add payment sandbox, shipping, legal pages and automated tests before live launch.
-6. Update STATUS and SESSION_HANDOFF at end of each session.
+## Tests
+GitHub writes succeeded. PHP syntax, WordPress installation/integration, mobile browser, gateway, stock race, REST and Store API product gate tests have **not been executed in this session**. Review CI results after PR.
 
-## Compliance gate
-User mentioned purchasing replica branded footwear. Do not list, advertise or enable sales of counterfeit trademarked goods. Require legally authorized inventory before publication and real checkout. Never commit secrets.
+## Next task order
+P0: CI results -> correct any errors -> manual/automated WordPress staging smoke test -> strengthen compliance gate through all APIs and URL paths.
+P1: Product/catalog/variations and stock tests -> simple in-store POS entry (idempotent, atomic decrement with audit) -> checkout sandbox and shipping, returns.
+P2: Performance, backups, privacy, SEO, pre-launch review.
+
+## Files to keep fresh every session
+`docs/STATUS.md` = current truthful progress
+`docs/SESSION_HANDOFF.md` = copyable context and next concrete action
+`docs/DECISIONS.md` = append-only ADR decisions
+`docs/ROADMAP.md` = priorities and milestone checkboxes
+`AGENTS.md` = binding engineering instructions
