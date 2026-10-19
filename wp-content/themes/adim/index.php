@@ -1,0 +1,1 @@
+<?php get_header(); ?><main class="adim-container" id="main"><?php if (have_posts()) { while (have_posts()) { the_post(); ?><article <?php post_class(); ?>><h1><?php the_title(); ?></h1><?php the_content(); ?></article><?php } the_posts_pagination(); } else { esc_html_e('İçerik bulunamadı.', 'adim'); } ?></main><?php get_footer(); ?>
