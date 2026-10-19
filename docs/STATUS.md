@@ -1,32 +1,33 @@
 # Current status — ADIM AYAKKABI
 
 **Date:** 2026-10-20
-**Stage:** Phase 1 storefront foundation in branch `feat/mobile-storefront-foundation`, pending code review.
-**Production:** NOT deployed. No live checkout, no verified products listed.
+**Stage:** Phase 1 storefront foundation; **draft PR #1** open against `main`.
+**PR:** https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1
+**Branch:** `feat/mobile-storefront-foundation`
+**Production:** NOT deployed. No live checkout and no approved product catalog.
 
-## Confirmed on main before this work
-- Repository initialized with README, AGENTS and architecture, roadmap, decisions, development and handoff docs.
-- Basic WordPress PHP theme under `wp-content/themes/adim/`.
-- GitHub writes existed; WordPress/PHP/browser integration not yet verified.
+## Existing main baseline
+- WordPress theme scaffold `wp-content/themes/adim`; README, AGENTS, initial architectural documents.
 
-## Changes in this branch
-- Responsive, accessible navigation with menu toggle, Escape handling and skip link.
-- Search form, cart link with quantity, dynamic WooCommerce shop permalink.
-- Better homepage hero, category links and new-arrival product grid.
-- Responsive CSS and WooCommerce shop/page templates.
-- `adim-operations` WooCommerce plugin prototype with product approval checkbox, catalog query filtering and fail-closed purchasability rule.
-- GitHub Actions PHP/JS lint workflow.
-- Release checklist and refreshed cross-chat handoff.
+## Added in PR #1
+- Responsive mobile/keyboard navigation, product search, cart link, shop permalink helper.
+- Homepage hero, dynamic categories, new arrivals and responsive WooCommerce styling.
+- WooCommerce compatibility and page templates.
+- `adim-operations` prototype product approval gate: unchecked products cannot be purchased and ordinary shop/shortcode queries filtered.
+- `.github/workflows/quality.yml` (PHP lint, JS syntax and sensitive-config names).
+- Complete 21-section original plan `docs/MASTER_PLAN_FULL.md`, release checklist and persistent handoff.
+- Backlog issues #2 (staging/QA), #3 (physical POS + stock), #4 (legal gate/API review).
 
 ## Verification
-- GitHub create/update responses succeeded.
-- PHP syntax lint: **not yet run locally**; GitHub Actions workflow will check the PR if Actions are available.
-- WordPress/WooCommerce browser, catalog, payment and inventory tests: **not run**.
-- Legal review: **pending**. Product gate is a prototype; REST/Store API behavior must be tested before relying on it.
+- GitHub writes and draft PR creation succeeded.
+- **GitHub Actions run 39343272480: success**, all jobs green: PHP syntax, JS syntax, forbidden configuration names.
+- WordPress/WooCommerce staging, browser/mobile, REST/Store API, payment, shipping and concurrent stock tests **not executed**.
+- Prototype approval gate is NOT proven production safe; legal business/onboarding reviews remain open.
+- Review latest CI run after additional docs commits, as PR head changed.
 
-## Immediate next action
-1. Inspect the PR diff and any CI run; fix syntax or CSS regressions.
-2. Provision private staging WordPress + WooCommerce and exercise the UI on mobile.
-3. Audit product approval gate in all catalog APIs and direct product URLs.
-4. Implement/test size-level stock, in-store sales, concurrency and audit logs before checkout.
-5. Update this file and `docs/SESSION_HANDOFF.md` at the end of the session.
+## Next steps
+1. Confirm PR latest Actions run and review diff; resolve any issues.
+2. Provision WordPress/WooCommerce staging and test mobile UI (Issue #2).
+3. Verify and harden approval gate across direct URLs/Store API/REST; no real listings before compliant goods confirmed (Issue #4).
+4. Build and test atomic variation inventory + physical retail sale (Issue #3).
+5. Update STATUS and SESSION_HANDOFF after each session; do not merge without QA.
