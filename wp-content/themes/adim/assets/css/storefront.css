@@ -1,0 +1,75 @@
+/* ADIM v1 responsive storefront. No external font, runtime dependency or CDN. */
+:root{--adim-black:#151515;--adim-orange:#f57c00;--adim-bg:#f7f7f5;--adim-border:#e3e2de;--adim-text:#272727}
+body{min-width:320px}
+.screen-reader-text{position:absolute!important;clip:rect(1px,1px,1px,1px);clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+.screen-reader-text:focus{clip:auto;clip-path:none;width:auto;height:auto;z-index:10000;background:#fff;color:#151515;padding:1rem}
+.adim-skip-link{position:absolute;left:1rem;top:-8rem;background:#fff;color:#151515;padding:.75rem 1rem;z-index:1000}
+.adim-skip-link:focus{top:1rem}
+.adim-header{position:relative;z-index:40;box-shadow:0 2px 14px rgba(0,0,0,.08)}
+.adim-header-inner{max-width:1240px;margin:auto;display:flex;align-items:center;gap:1.6rem;min-height:74px}
+.adim-brand{white-space:nowrap;line-height:1.05}
+.adim-nav{margin-top:0;flex:1}
+.adim-nav-list{margin:0;padding:0;list-style:none;display:flex;align-items:center;gap:1.25rem}
+.adim-nav-list li{list-style:none}
+.adim-nav-list a,.adim-nav>a{font-weight:600;font-size:.9rem;text-decoration:none}
+.adim-nav a:hover,.adim-header-actions a:hover{color:#ffb057}
+.adim-header-actions{display:flex;align-items:center;gap:1rem;margin-left:auto}
+.adim-search{display:flex;align-items:center;border:1px solid #777;border-radius:5px;min-width:150px;max-width:220px}
+.adim-search input{background:transparent;border:0;color:#fff;min-width:0;width:100%;padding:.55rem;font:inherit}
+.adim-search input::placeholder{color:#c9c9c9}
+.adim-search button{background:none;border:0;color:#fff;padding:.35rem .65rem;font-size:1.5rem;cursor:pointer}
+.adim-cart-link{font-size:.9rem;font-weight:700;text-decoration:none;white-space:nowrap}
+.adim-cart-count{display:inline-grid;place-items:center;border-radius:100%;background:var(--adim-orange);color:#151515;min-width:22px;height:22px;margin-left:.2rem}
+.adim-menu-toggle{display:none;background:transparent;border:1px solid #777;border-radius:5px;color:#fff;padding:.45rem .6rem;font:inherit;cursor:pointer}
+.adim-menu-icon{margin-right:.2rem}
+.adim-hero{background:#ece8e2;text-align:left;min-height:350px;display:flex;align-items:center}
+.adim-hero-inner{width:min(100%,1180px);margin:auto}
+.adim-hero h1{max-width:690px;letter-spacing:-.03em}
+.adim-hero p:not(.adim-eyebrow){font-size:clamp(1rem,1.4vw,1.25rem);max-width:480px}
+.adim-eyebrow{color:#a14a00;font-weight:800;letter-spacing:.09em;font-size:.75rem}
+.adim-button{font-weight:700;transition:background .12s ease}
+.adim-button:hover{background:#303030}
+.adim-section-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:0 0 1.1rem}
+.adim-section-heading h2{font-size:clamp(1.35rem,2.4vw,2rem);margin:0}
+.adim-section-heading a{text-decoration:none;color:#924200;font-weight:700}
+.adim-category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem}
+.adim-category-card{display:flex;justify-content:space-between;align-items:center;padding:1.5rem 1rem;min-height:112px;background:#eeeae4;border:1px solid var(--adim-border);border-radius:6px;text-decoration:none;font-weight:750}
+.adim-category-card:hover{border-color:var(--adim-orange)}
+.adim-store-banner{background:#eae6df;padding:1rem 0 2rem;margin-top:1rem}
+.adim-store-banner h2{margin:.15rem 0;font-size:clamp(1.25rem,2.4vw,2rem)}
+.adim-store-banner p:last-child{margin:0;max-width:570px}
+.woocommerce ul.products li.product,.woocommerce-page ul.products li.product{background:#fff;border:1px solid var(--adim-border);border-radius:7px;overflow:hidden;padding:0 0 1rem;text-align:left}
+.woocommerce ul.products li.product>a,.woocommerce-page ul.products li.product>a{display:block}
+.woocommerce ul.products li.product img{aspect-ratio:1/1;object-fit:contain;background:#f2f2f0;padding:.35rem;margin-bottom:.5rem}
+.woocommerce ul.products li.product .woocommerce-loop-product__title,.woocommerce ul.products li.product .price{padding:0 .85rem}
+.woocommerce ul.products li.product .button{margin:.4rem .85rem 0;background:#151515;color:#fff;border-radius:4px}
+.woocommerce a.button:hover,.woocommerce button.button:hover{background:#f57c00;color:#151515}
+.woocommerce div.product{margin-top:1.5rem}
+.woocommerce button.button.alt,.woocommerce a.button.alt{background:#151515;color:white}
+.woocommerce button.button.alt:hover,.woocommerce a.button.alt:hover{background:#f57c00;color:#151515}
+.adim-page-title{font-size:clamp(1.5rem,3vw,2.4rem);margin:0 0 1.5rem}
+@media(max-width:960px){
+  .adim-header-inner{flex-wrap:wrap;gap:.8rem}
+  .adim-menu-toggle{display:inline-flex;align-items:center;order:2;margin-left:auto}
+  .adim-header-actions{order:3;margin-left:0}
+  .adim-nav{order:4;width:100%;flex:none;margin:0}
+  .adim-nav-list{align-items:stretch;flex-direction:column;gap:0}
+  .adim-nav-list a,.adim-nav>a{display:block;padding:.8rem .25rem}
+  body.adim-js .adim-nav:not(.is-open){display:none}
+  .adim-header-actions{margin-left:0}
+  .adim-hero-inner{padding:0 1.25rem}
+  .adim-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:540px){
+  .adim-header{padding:.7rem 1rem}
+  .adim-brand{font-size:1.2rem}
+  .adim-search{max-width:none;flex:1}
+  .adim-header-actions{width:100%;justify-content:space-between}
+  .adim-hero{min-height:290px;padding:1rem 0}
+  .adim-hero h1{font-size:2.25rem}
+  .adim-container{padding:1.5rem .9rem}
+  .adim-category-card{min-height:80px;padding:1rem;font-size:.86rem}
+  .woocommerce ul.products[class*=columns-] li.product,.woocommerce-page ul.products[class*=columns-] li.product{width:calc(50% - 6px);margin:0 0 12px}
+  .woocommerce ul.products,.woocommerce-page ul.products{display:flex;flex-wrap:wrap;gap:0 12px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
