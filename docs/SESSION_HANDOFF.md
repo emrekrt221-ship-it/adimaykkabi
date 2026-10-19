@@ -1,18 +1,23 @@
-# Session handoff
+# Session handoff — 2026-10-20
 
-Project: ADIM AYAKKABI. Repository: emrekrt221-ship-it/adimaykkabi.
+Repository: emrekrt221-ship-it/adimaykkabi (main).
 
-## Context
-User owns a physical shoe shop and wants a professional, fast, low-cost ecommerce site. Chosen WooCommerce + custom lightweight theme, MySQL, HPOS, HTTPS; Cloudflare explicitly excluded initially. Brand colors black/orange/white. Inventory must sync with in-store sales.
+## Product decisions
+ADIM AYAKKABI footwear ecommerce; mobile-first WooCommerce with MySQL/HPOS, black/orange theme, no Cloudflare initially, physical store and online stock shared by size/color. Start with low costs and professional performance targets.
 
-## Important limitation
-User mentioned buying replica shoes resembling major brands. Do not assume they are authorized. Do not publish counterfeit trademarked inventory or facilitate their checkout. Work on neutral infrastructure, design and compliance-ready flows only until legal authorization is established.
+## Completed
+GitHub main initialized with README, AGENTS, docs/MASTER_PLAN.md, ROADMAP.md, DECISIONS.md, STATUS.md, DEVELOPMENT.md, this handoff, .gitignore and theme files in wp-content/themes/adim: style.css, functions.php, header.php, footer.php, front-page.php, index.php.
 
-## Work done
-Repository documentation initialized. No tested application code yet.
+## Verification
+GitHub writes succeeded. No runtime, PHP lint, WordPress browser test or checkout test has been performed. Do not describe storefront as production-ready.
 
-## Next action
-Inspect files, scaffold theme (`wp-content/themes/adim/`) and optional custom plugin (`wp-content/plugins/adim-commerce/`), create local environment instructions and run available checks. Record actual test outcomes.
+## Next tasks
+1. Read AGENTS.md and all docs; inspect current repo.
+2. Set up local WordPress/WooCommerce test environment; PHP lint theme.
+3. Implement proper WooCommerce template integration, mobile navigation and product cards; test accessibility.
+4. Build physical store sale stock workflow, verify size-level stock and concurrency.
+5. Add payment sandbox, shipping, legal pages and automated tests before live launch.
+6. Update STATUS and SESSION_HANDOFF at end of each session.
 
-## Rules
-Update this handoff and docs/STATUS.md at the end of every session. Use small PRs; avoid secrets and production changes.
+## Compliance gate
+User mentioned purchasing replica branded footwear. Do not list, advertise or enable sales of counterfeit trademarked goods. Require legally authorized inventory before publication and real checkout. Never commit secrets.
