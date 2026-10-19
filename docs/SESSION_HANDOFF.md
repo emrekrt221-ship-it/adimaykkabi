@@ -1,43 +1,41 @@
-# Session handoff — 2026-10-20
+# ADIM AYAKKABI — cross-chat handoff
 
+Date: 2026-10-20
 Repository: https://github.com/emrekrt221-ship-it/adimaykkabi
 Default branch: `main`
-Current work branch: `feat/mobile-storefront-foundation`
+Feature branch: `feat/mobile-storefront-foundation`
+Draft PR: https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1
 
-## Instruction for next ChatGPT conversation
-1. Use GitHub connector to read the **live repo state**, not remembered progress.
-2. Read `AGENTS.md`, `docs/MASTER_PLAN.md`, `docs/DECISIONS.md`, `docs/ROADMAP.md`, `docs/STATUS.md`, `docs/RELEASE_CHECKLIST.md`, then this file.
-3. Inspect current branch, open PRs and GitHub Actions/checks; never assume a PR is merged.
-4. Continue the next unfinished task; prefer small reviewed PRs. Do not overwrite changes made by others.
-5. Run tests, record exact results and update STATUS + SESSION_HANDOFF before stopping.
-6. No promise of autonomous background execution: another chat continues only when user opens it and requests continuation.
+## START HERE in next ChatGPT session
+1. Connect GitHub and open THIS repository.
+2. Read `AGENTS.md` and `docs/STATUS.md` before any edits.
+3. Read original 21-section requirements in `docs/MASTER_PLAN_FULL.md`, and then `docs/MASTER_PLAN.md`, `docs/ARCHITECTURE.md` if present, `docs/DECISIONS.md`, `docs/ROADMAP.md`, `docs/RELEASE_CHECKLIST.md`.
+4. Inspect PR #1 and CI, and read GitHub issues #2, #3 and #4. Confirm branch/merge state; never rely on this handoff alone if GitHub changed.
+5. Work on the next unfinished task in a small PR; run actual tests and record results. Update this file and STATUS as last step.
+6. The user can ask a new chat "GitHub'daki adimaykkabi projesine devam et; AGENTS.md ve SESSION_HANDOFF.md'yi oku". Work happens only while a chat is actively executing; no automatic background continuity.
 
-## Invariants and decisions
-- Single footwear store in Turkey, physical stock shared with ecommerce by product/color/size.
-- Mobile-first WooCommerce + MySQL/HPOS, minimal theme + isolated plugin; no Cloudflare in v1.
-- Colors black #151515, orange #F57C00, off-white #F7F7F5.
-- Payment through approved provider; never store card data/production credentials in Git.
-- Only legally authorized goods can be published and sold. Counterfeit trademarked shoes cannot go live. Payment approval, legal/ETBIS and privacy gates block launch.
-- Prior full plan: ADIM AYAKKABI E-ticaret Ana Plan v1.0 (20 Oct 2026); `docs/MASTER_PLAN.md` and `docs/ROADMAP.md` are the repo canonical synopsis.
+## Product
+Single physical footwear shop in Reyhanlı, selling eligible products through a mobile-first WooCommerce site across Turkey. Stock by model/color/size shared with physical retail. WooCommerce HPOS/MySQL, lean custom PHP theme, isolated operations plugin. Black #151515, orange #F57C00, off-white #F7F7F5. Cloudflare deliberately omitted in v1. Low cost but reliable SSL, backup, gateway sandbox and compliant release.
 
-## Work completed on branch
-- Updated theme: `functions.php`, `header.php`, `front-page.php`, `footer.php`.
-- New files: `assets/css/storefront.css`, `assets/js/navigation.js`, `woocommerce.php`, `page.php`.
-- Added prototype `wp-content/plugins/adim-operations/adim-operations.php` (manual product authorization flag, Woo purchasability and ordinary shop query restrictions). **Do not treat as proven airtight.**
-- Added `.github/workflows/quality.yml` (PHP lint + JS syntax), `docs/RELEASE_CHECKLIST.md`.
-- Updated documentation and handoff for multi-chat continuity.
+## What changed in PR #1
+- Theme: functions, header, homepage, footer, new `assets/css/storefront.css`, `assets/js/navigation.js`, `woocommerce.php`, `page.php`.
+- Plugin: `wp-content/plugins/adim-operations/adim-operations.php` first prototype product-review/purchasability guard (not a full compliance mechanism).
+- CI: `.github/workflows/quality.yml`.
+- Docs: `docs/MASTER_PLAN_FULL.md`, `docs/RELEASE_CHECKLIST.md`, updated ROADMAP/STATUS/DECISIONS/DEVELOPMENT/HANDOFF.
+- Issues: #2 staging + responsive QA; #3 variant stock + store POS; #4 legal approval gate/API hardening.
 
-## Tests
-GitHub writes succeeded. PHP syntax, WordPress installation/integration, mobile browser, gateway, stock race, REST and Store API product gate tests have **not been executed in this session**. Review CI results after PR.
+## Verified and unverified
+- GitHub Actions workflow run 39343272480 PASSED PHP and JS lint checks.
+- Full WordPress/WooCommerce staging and browser test NOT DONE. Last-stock concurrency, card payment and shipping NOT DONE.
+- PR #1 draft, not merged. Always check current CI status and review.
+- User acquired replica footwear; their legal trademark authorization is unresolved. No counterfeit-marked merchandise may be advertised/listed/sold. No real checkout enablement before merchant, regulatory and payment approvals.
+- Never store secrets, production customer data, actual cards, or payment keys in repo.
 
-## Next task order
-P0: CI results -> correct any errors -> manual/automated WordPress staging smoke test -> strengthen compliance gate through all APIs and URL paths.
-P1: Product/catalog/variations and stock tests -> simple in-store POS entry (idempotent, atomic decrement with audit) -> checkout sandbox and shipping, returns.
-P2: Performance, backups, privacy, SEO, pre-launch review.
+## Next precise action
+Open PR #1, ensure latest CI is green, perform WooCommerce staging QA with authorized sample products. Review catalog restriction in WC Store API, product REST and direct URL before launch. Then implement physical POS inventory with idempotent stock operation and tests.
 
-## Files to keep fresh every session
-`docs/STATUS.md` = current truthful progress
-`docs/SESSION_HANDOFF.md` = copyable context and next concrete action
-`docs/DECISIONS.md` = append-only ADR decisions
-`docs/ROADMAP.md` = priorities and milestone checkboxes
-`AGENTS.md` = binding engineering instructions
+## Always update
+`docs/STATUS.md`: truthful completed/blocked/tested.
+`docs/SESSION_HANDOFF.md`: context, current branch/PR and next concrete step.
+`docs/DECISIONS.md`: changes to architecture.
+`docs/ROADMAP.md`: only check off when accepted/tested.
