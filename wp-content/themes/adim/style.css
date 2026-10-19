@@ -1,0 +1,10 @@
+/*
+Theme Name: ADIM Storefront
+Theme URI: https://github.com/emrekrt221-ship-it/adimaykkabi
+Author: ADIM project
+Description: Lightweight mobile-first WooCommerce storefront theme.
+Version: 0.1.0
+Requires PHP: 8.1
+Text Domain: adim
+*/
+:root{--adim-black:#151515;--adim-orange:#f57c00;--adim-bg:#f7f7f5}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--adim-bg);color:var(--adim-black);line-height:1.5}a{color:inherit}a:focus-visible,button:focus-visible{outline:3px solid var(--adim-orange);outline-offset:3px}.adim-header{background:var(--adim-black);color:#fff;padding:1rem max(1rem,calc((100vw - 1200px)/2))}.adim-brand{font-weight:800;font-size:1.4rem;text-decoration:none;letter-spacing:.04em}.adim-brand span{color:var(--adim-orange)}.adim-nav{display:flex;gap:1.25rem;flex-wrap:wrap;margin-top:.6rem}.adim-nav a{text-decoration:none}.adim-container{max-width:1200px;margin:auto;padding:2rem 1rem}.adim-hero{padding:clamp(3rem,9vw,7rem) 1rem;background:#ece8e2;text-align:center}.adim-hero h1{font-size:clamp(2rem,6vw,4rem);line-height:1.1;margin:.5rem 0}.adim-button{display:inline-block;background:var(--adim-black);color:#fff;padding:.85rem 1.4rem;text-decoration:none;border-radius:4px;margin-top:1rem}.adim-footer{background:var(--adim-black);color:#fff;padding:2rem 1rem;text-align:center;margin-top:3rem}@media(min-width:768px){.adim-header-inner{display:flex;justify-content:space-between;align-items:center}.adim-nav{margin-top:0}}
