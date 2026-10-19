@@ -1,0 +1,15 @@
+# WordPress core, uploads, dependencies and secrets
+/wp-admin/
+/wp-includes/
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/upgrade/
+/wp-content/plugins/woocommerce/
+/wp-config.php
+.env
+.env.*
+!.env.example
+node_modules/
+vendor/
+*.log
+.DS_Store
