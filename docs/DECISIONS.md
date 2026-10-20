@@ -9,6 +9,7 @@ ADR-006: No custom payment-card storage; use vetted provider integration.
 ADR-007: GitHub docs are canonical continuity source between chats; update after every session.
 ADR-008: Legal authorization of products is a prerequisite to publishing inventory or activating sales.
 ADR-009 (2026-10-20): Extend existing `adim` classic Woo-compatible theme instead of replacing it with a block theme; reduce churn while improving mobile design.
-ADR-010 (2026-10-20): Keep WooCommerce-specific business logic in `adim-operations`, not theme; first prototype protects purchasability until review is recorded.
-ADR-011 (2026-10-20): Add PHP/JS syntax CI immediately; functional/browser and payment tests remain required, never inferred from lint.
+ADR-010 (2026-10-20): Keep WooCommerce-specific business logic in `adim-operations`, not theme; initial product approval gate must be tested against public APIs.
+ADR-011 (2026-10-20): PHP/JS syntax CI plus mocked hook smoke tests; functional/browser/payment tests remain required and cannot be inferred from lint or mocks.
 ADR-012 (2026-10-20): Work in feature branches with reviewable PRs; other chats must check GitHub branch and PR state and continue from updated handoff.
+ADR-013 (2026-10-20): Fail-closed sales deployment gate: `ADIM_ENABLE_SALES` defaults to disabled. Explicit private server configuration and launch approval required. An administrative review flag marks internal sourcing checks, but is never itself legal certification. WooCommerce API and direct URL behavior remains a staging test requirement.
