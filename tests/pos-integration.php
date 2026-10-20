@@ -94,4 +94,38 @@ pos_test((int) wc_get_product(wc_get_product_id_by_sku($sku43))->get_stock_quant
 pos_test((int) wc_get_product(wc_get_product_id_by_sku($sku))->get_stock_quantity() === 0, 'size 42 unaffected by size 43 sale');
 pos_test($third->get_payment_method() === 'adim_pos_external_terminal', 'external card terminal channel recorded');
 
+
+// Actual variable product: physical sale must select a child SKU, not a parent.
+$attribute = new WC_Product_Attribute();
+$attribute->set_name('Beden');
+$attribute->set_options(['42', '43']);
+$attribute->set_visible(true);
+$attribute->set_variation(true);
+$parent = new WC_Product_Variable();
+$parent->set_name('ADIM test size-based footwear');
+$parent->set_status('publish');
+$parent->set_attributes([$attribute]);
+$parent->save();
+update_post_meta($parent->get_id(), '_adim_sale_approved', 'yes');
+
+$childSku = [];
+foreach (['42' => 2, '43' => 1] as $size => $initial) {
+    $child = new WC_Product_Variation();
+    $child->set_parent_id($parent->get_id());
+    $child->set_status('publish');
+    $child->set_attributes(['beden' => $size]);
+    $child->set_sku('ADIM-POS-SIZE-' . $size . '-' . strtoupper(wp_generate_password(8, false, false)));
+    $child->set_regular_price('1599');
+    $child->set_manage_stock(true);
+    $child->set_stock_quantity($initial);
+    $child->set_backorders('no');
+    $child->save();
+    $childSku[$size] = $child->get_sku();
+}
+WC_Product_Variable::sync($parent->get_id());
+$sizeSale = adim_pos_record_sale($childSku['42'], 1, wp_generate_uuid4(), $operator);
+pos_test($sizeSale instanceof WC_Order && $sizeSale->get_status() === 'completed', 'POS records real 42-size WooCommerce variation');
+pos_test((int) wc_get_product(wc_get_product_id_by_sku($childSku['42']))->get_stock_quantity() === 1, 'size 42 stock 2 to 1');
+pos_test((int) wc_get_product(wc_get_product_id_by_sku($childSku['43']))->get_stock_quantity() === 1, 'size 43 stock remains 1');
+
 echo 'ADIM POS integration tests passed.' . PHP_EOL;
