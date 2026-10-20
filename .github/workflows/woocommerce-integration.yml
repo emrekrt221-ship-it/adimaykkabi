@@ -59,5 +59,7 @@ jobs:
       - name: Test physical POS WooCommerce orders, stock reservations and duplicate requests
         run: |
           php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/pos-integration.php" --path=/tmp/adim-wordpress --allow-root
+      - name: Test reviewed-product cashier admin screen
+        run: php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/pos-admin-smoke.php" --path=/tmp/adim-wordpress --allow-root
       - name: Test two real POS workers racing for the same stock
         run: bash tests/pos-concurrency.sh
