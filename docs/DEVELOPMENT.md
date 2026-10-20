@@ -1,37 +1,31 @@
-# Development and test setup
+# ADIM WordPress/WooCommerce development
 
 ## Repo scope
-This repository intentionally contains custom project code only. WordPress core, WooCommerce vendor plugin, media uploads and configuration/secrets belong in private runtime environments, not in Git.
+Version custom WordPress theme `wp-content/themes/adim` and operations plugin `wp-content/plugins/adim-operations`. Do not commit WordPress core, WooCommerce vendor files, `wp-config.php`, uploads or secrets.
 
-- Theme: `wp-content/themes/adim` — versioned storefront templates/CSS/JS.
-- Operations plugin: `wp-content/plugins/adim-operations` — WooCommerce customizations; prototype approval gate.
-- CI: `.github/workflows/quality.yml`.
-- Persistent project state: `docs/STATUS.md` and `docs/SESSION_HANDOFF.md`.
+## Set up private staging
+1. Install supported WordPress, WooCommerce, PHP/MySQL on isolated, non-public staging.
+2. Copy theme and operations plugin to WordPress `wp-content`, enable WooCommerce first, HPOS (where compatible), then theme and plugin.
+3. Create default Woo pages, menu, categories and legally authorized synthetic test products. Include size/color variation stocks.
+4. By default `ADIM_ENABLE_SALES` is not defined; **nobody can purchase**. For *staging test only*, define `ADIM_ENABLE_SALES` as true in private server configuration `wp-config.php`. Never commit this value or actual payment keys.
+5. Test both switch settings, product review flag on/off, parent/variation, cart/checkout and access via direct product URL, Store API, REST API and other enabled plugins. No real payment until legal and provider approval.
+6. Configure test gateway, shipping and transactional email, then run full release checklist. Do not deploy without approvals.
 
-## Manual local/staging install
-1. Install up-to-date supported WordPress/PHP/MySQL and a compatible WooCommerce version in an isolated staging environment.
-2. Copy `wp-content/themes/adim` and `wp-content/plugins/adim-operations` into that installation.
-3. Activate WooCommerce; confirm standard Woo pages were created and HPOS compatibility.
-4. Activate the ADIM theme, then activate ADIM Store Operations.
-5. Configure product categories and the theme's primary menu. Set shop, cart, checkout and account pages using WooCommerce settings.
-6. Add **legally authorized sample goods only** and configure variable size/color stock. Unapproved products are intentionally not purchasable.
-7. Keep live gateway API keys and real customer data out of staging. Use gateway sandbox and test orders.
-8. Configure TLS, offsite backup and transactional email; use real shipping/legal details only after verification.
-
-## Static checks
+## Automated isolated checks (PHP and Node required)
 ```bash
-find wp-content -name '*.php' -type f -print0 | xargs -0 -n1 php -l
-find wp-content -name '*.js' -type f -print0 | xargs -0 -n1 node --check
+find wp-content tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+find wp-content -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+php tests/operations-smoke.php
+php tests/operations-smoke.php --enabled
 ```
+The mock tests validate hook-level logic, NOT native WooCommerce integration. GitHub Actions repeats these checks on PR updates.
 
-## Manual smoke checklist
-- Header menu keyboard toggles and closes with Escape; search works on desktop/mobile.
-- Category links and 8 new-arrivals slots render without warnings.
-- Single, variable, out-of-stock product and Woo blocks/shortcodes show consistently.
-- Product with no approval cannot purchase; approved test product works; verify REST and Store API endpoints separately.
-- No unexpected styling shifts in Woo cart and checkout.
-- Checkout pages always bypass public cache.
-- No secrets in source, errors logged without customer/card secrets.
+## Required staging checks
+- Product with no review: ordinary catalog, shortcodes, direct URL, Woo Store API, WC REST and all add-to-cart routes must not disclose/permit purchase (test explicitly).
+- Approved product: visible only if otherwise Woo-visible; purchasable only when staging sales switch is true and its stock is positive.
+- Product/variation approval inherited from parent; revoked approval blocks populated cart.
+- Mobile 360/390/430/768/1280 and keyboard focus, local caching exclusions, real gateway sandbox and refund tests.
+- Run Woo integration/load/security tests and record evidence; never infer from mocked checks.
 
-## Operational rules
-Before every development session: read AGENTS + docs, pull latest, use feature branch. After session: update STATUS/HANDOFF with exact tests and next task. Before release: complete docs/RELEASE_CHECKLIST.md.
+## Session protocol
+Read `AGENTS.md`, `docs/STATUS.md`, `docs/SESSION_HANDOFF.md` before starting and update both handoff/status at the end. GitHub is canonical across chats.
