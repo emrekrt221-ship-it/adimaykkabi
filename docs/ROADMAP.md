@@ -22,3 +22,5 @@ A checked task means implementation + focused test exists in a draft PR; it does
 - [ ] Optional Redis/CDN only with measured need; no Cloudflare for v1.
 
 Launch definition: approved legal inventory and financial/legal terms, production QA & security, reviewed/merged PRs, tested staging, proper merchant payment and fulfillment.
+
+- [x] Prevent stale POS worker from overriding manager-reviewed transaction ledger (PR #6; WooCommerce CI).
