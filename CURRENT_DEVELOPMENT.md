@@ -20,6 +20,9 @@ Updated: 2026-10-20. **Read this file FIRST in any new ChatGPT development conve
 - [Run 39391233199](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391233199) — SUCCESS PHP/JS syntax and isolated hook tests.
 - These were checked before the latest documentation-only edits; check latest PR head before QA merge. Tests are **not** a live staging or sales authorization.
 
+- [Run 39392125050](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39392125050) — SUCCESS on latest PR #6 documentation head, complete real WooCommerce integration and POS concurrency regression.
+- [Run 39392125012](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39392125012) — SUCCESS PHP/JS/smoke code checks on same head.
+
 ## Explicit unfinished / blocked
 - Crash injection/repair of interrupted POS writes, refunds/returns with restock inspection and complete fiscal/accounting support.
 - Browser/mobile/device and accessibility QA, persistent private staging with backup/restore, online+POS checkout contention.
