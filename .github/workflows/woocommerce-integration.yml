@@ -56,3 +56,6 @@ jobs:
           php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/integration-wordpress.php" --path=/tmp/adim-wordpress --allow-root
       - name: Test storefront and product URLs over HTTP
         run: bash tests/storefront-http.sh
+      - name: Test physical POS WooCommerce orders, stock reservations and duplicate requests
+        run: |
+          php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/pos-integration.php" --path=/tmp/adim-wordpress --allow-root
