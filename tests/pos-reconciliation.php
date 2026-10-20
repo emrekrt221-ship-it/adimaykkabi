@@ -79,6 +79,14 @@ adim_review_assert(
     count(array_filter($notes, static fn($note) => str_contains($note->content, $reason))) >= 1,
     'WooCommerce order retains review evidence'
 );
+// A delayed worker must never be able to overwrite an acknowledged review.
+$late = $wpdb->update($table, ['status' => 'completed'],
+    ['request_key' => $key, 'status' => 'processing'], ['%s'], ['%s', '%s']);
+adim_review_assert($late === 0, 'late worker cannot override reviewed ledger through optimistic update');
+adim_review_assert($wpdb->get_var($wpdb->prepare(
+    "SELECT status FROM {$table} WHERE request_key=%s", $key
+)) === 'reviewed', 'previously acknowledged review remains immutable');
+
 $second = adim_pos_acknowledge_review($key, $reason, (int) $administrator->ID);
 adim_review_assert(is_wp_error($second) && $second->get_error_code() === 'adim_pos_review_not_pending',
     'same review cannot be acknowledged twice');
