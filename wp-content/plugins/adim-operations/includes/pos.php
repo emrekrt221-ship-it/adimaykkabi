@@ -56,7 +56,7 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
     if (!function_exists('wc_create_order') || !function_exists('wc_reserve_stock_for_order')) {
         return new WP_Error('adim_pos_unavailable', 'WooCommerce stok rezervasyonu kullanılamıyor.');
     }
-    if (!current_user_can('manage_woocommerce') || $operator_id !== get_current_user_id()) {
+    if (!adim_pos_can_sell() || $operator_id !== get_current_user_id()) {
         return new WP_Error('adim_pos_forbidden', 'Mağaza satış yetkiniz yok.');
     }
     if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $request_key)) {
