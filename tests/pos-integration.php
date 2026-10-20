@@ -55,6 +55,23 @@ pos_test(is_wp_error($refuse), 'unreviewed product cannot sell in store');
 
 $first = adim_pos_record_sale($sku, 1, $key, $operator, 'cash');
 if (is_wp_error($first)) {
+    global $wpdb;
+    $entry = $wpdb->get_row($wpdb->prepare(
+        "SELECT order_id, status FROM {$wpdb->prefix}adim_pos_requests WHERE request_key=%s", $key
+    ));
+    echo 'DEBUG POS ledger ' . wp_json_encode($entry) . PHP_EOL;
+    $suspect = $entry && $entry->order_id ? wc_get_order((int) $entry->order_id) : null;
+    if ($suspect) {
+        foreach ($suspect->get_items('line_item') as $item) {
+            echo 'DEBUG POS item ' . wp_json_encode([
+                'id' => $item->get_id(),
+                'quantity' => $item->get_quantity(),
+                'reduced_stock' => $item->get_meta('_reduced_stock', true),
+                'database_reduced' => wc_get_order_item_meta($item->get_id(), '_reduced_stock', true),
+            ]) . PHP_EOL;
+        }
+    }
+    echo 'DEBUG POS remaining ' . (int) wc_get_product(wc_get_product_id_by_sku($sku))->get_stock_quantity() . PHP_EOL;
     throw new RuntimeException('POS first order: ' . $first->get_error_message());
 }
 pos_test($first instanceof WC_Order, 'approved POS sale creates WooCommerce order');
