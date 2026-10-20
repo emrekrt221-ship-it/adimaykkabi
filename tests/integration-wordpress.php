@@ -87,4 +87,20 @@ $visibleIds = array_map(static fn($p) => (int) $p->ID, $query->posts);
 adim_integration_assert(in_array($approved->get_id(), $visibleIds, true), 'public WP query contains approved');
 adim_integration_assert(!in_array($blocked->get_id(), $visibleIds, true), 'public WP query excludes unreviewed');
 
+
+// Regression: even when a third-party filter uses OR, unreviewed products
+// must not leak through the public WordPress product query.
+$orQuery = new WP_Query([
+    'post_type' => 'product',
+    'posts_per_page' => 50,
+    'meta_query' => [
+        'relation' => 'OR',
+        ['key' => '_adim_sale_approved', 'compare' => 'NOT EXISTS'],
+        ['key' => '_adim_sale_approved', 'value' => 'yes'],
+    ],
+]);
+$orIds = array_map(static fn($p) => (int) $p->ID, $orQuery->posts);
+adim_integration_assert(in_array($approved->get_id(), $orIds, true), 'reviewed product remains visible with OR filters');
+adim_integration_assert(!in_array($blocked->get_id(), $orIds, true), 'unreviewed product excluded even with OR filters');
+
 echo 'ADIM real WooCommerce integration smoke checks passed.' . PHP_EOL;
