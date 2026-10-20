@@ -6,13 +6,14 @@ add_action('admin_menu', static function (): void {
     if (!class_exists('WooCommerce')) {
         return;
     }
-    add_submenu_page(
-        'woocommerce',
+    add_menu_page(
         __('ADIM Mağaza Satışı', 'adim-operations'),
         __('Mağaza Satışı', 'adim-operations'),
-        'manage_woocommerce',
+        'adim_pos_sell',
         'adim-pos',
-        'adim_pos_render_screen'
+        'adim_pos_render_screen',
+        'dashicons-store',
+        57
     );
 });
 
@@ -20,7 +21,7 @@ add_action('admin_post_adim_pos_sale', 'adim_pos_handle_admin_sale');
 
 function adim_pos_handle_admin_sale(): void
 {
-    if (!current_user_can('manage_woocommerce')) {
+    if (!adim_pos_can_sell()) {
         wp_die(esc_html__('Bu işlem için yetkiniz yok.', 'adim-operations'), '', ['response' => 403]);
     }
     check_admin_referer('adim_pos_sale');
@@ -57,7 +58,7 @@ function adim_pos_handle_admin_sale(): void
 
 function adim_pos_render_screen(): void
 {
-    if (!current_user_can('manage_woocommerce')) {
+    if (!adim_pos_can_sell()) {
         wp_die(esc_html__('Mağaza satış yetkiniz yok.', 'adim-operations'));
     }
 

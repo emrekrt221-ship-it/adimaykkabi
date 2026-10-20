@@ -1,42 +1,45 @@
-# ADIM AYAKKABI — current development status
+# ADIM AYAKKABI — Project status
 Updated: 2026-10-20
-Repo: https://github.com/emrekrt221-ship-it/adimaykkabi
-Default: `main`; storefront branch `feat/mobile-storefront-foundation`; POS branch `feat/in-store-pos-reservations`.
-PR #1: https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1 (draft; pending merge).
-PR #5: https://github.com/emrekrt221-ship-it/adimaykkabi/pull/5 (draft; BASE is storefront branch #1).
-**Neither PR merged, no production/staging storefront live, ALL real sales disabled by default.**
+Repository: https://github.com/emrekrt221-ship-it/adimaykkabi
 
-## PR #1 (storefront and compliance scaffolding)
-- Responsive theme, mobile navigation, search, cart link, WooCommerce templates.
-- Reviewed-product catalog and direct Store API/HTTP access gating.
-- WordPress/WooCommerce/MySQL CI, real HTTP checks, per-variant stock isolation baseline.
-- Full 21-section plan in `docs/MASTER_PLAN_FULL.md`.
-- Website checkout only after explicit private constant `ADIM_ENABLE_SALES` and all compliance prerequisites.
+## GitHub branches and pull requests
+- Draft [PR #1](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1): `feat/mobile-storefront-foundation` -> `main` (mobile WooCommerce storefront and compliance guard).
+- Draft [PR #5](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/5): `feat/in-store-pos-reservations` -> `feat/mobile-storefront-foundation` (stock-backed in-store checkout).
+- Draft [PR #6](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/6): `feat/pos-reconciliation-and-cashier-role` -> `feat/in-store-pos-reservations` (this session, cashier role and manual reconciliation).
+- **All three are still draft and unmerged at the last check.** The main branch does NOT yet contain these feature implementations.
 
-## PR #5 (physical store POS foundation, stacked on #1)
-- New `wp-content/plugins/adim-operations/includes/pos.php`: real Woo orders, a unique per-request MySQL ledger (not stock SQL), WooCommerce InnoDB stock reservation, core reduction and confirmation.
-- `includes/pos-admin.php`: responsive WooCommerce → Mağaza Satışı screen with SKU search, inventory preview, cash/external terminal record, anti-CSRF nonce, capability gate, mandatory physical payment checkbox, latest transaction summary.
-- `ADIM_ENABLE_POS` is separate from web switch and defaults OFF; operator approval in private config required. Only reviewed, separately-stocked, non-backorder SKUs allowed.
-- Safe catch behavior: after attempting reduction, do not silently delete an order; retain `needs_review` ledger status and order for reconciliation.
-- `tests/pos-integration.php`, `tests/pos-admin-smoke.php`, `tests/pos-concurrency.sh` and supporting CLI workers.
-- Detailed operations/risks in `docs/POS_OPERATIONS.md`.
+## Implemented on PR #6
+- Dedicated `adim_cashier` role with `read` and `adim_pos_sell`, no WooCommerce manager rights.
+- Manager/admin allowed in-store sales through dedicated permission; cashier POS menu is available without opening WooCommerce management.
+- `POS İnceleme` manager-only page shows old processing entries (15+ minutes) and needs-review entries.
+- Manager can acknowledge a matching POS WooCommerce order only with an explanatory review note. Request ID + WooCommerce order origin must match; orphan request cannot be dismissed. Notes are saved to WooCommerce order history.
+- Review does not modify inventory, charge a customer, mark order paid, refund or restore stock.
+- Real WooCommerce tests for roles, cashier order creation, denied manager actions, manager review, audit notes and orphan/stale processing safeguards.
+- Documentation: `docs/POS_RECONCILIATION.md`.
 
-## Verified by GitHub Actions
-- POS and storefront static checks: run **39385002564 = success**.
-- Actual WordPress+WooCommerce+MySQL integration, cashier UI and two-worker stock/idempotency race: run **39385002496 = success**.
-- Earlier integration runs #39383645082 and #39383830778 failed during POS development; identified unsafe deletion after stock reduction, fixed conservatively. Later runs passed. Do not suppress known earlier failures.
-- Latest documentation-only commit may trigger another CI run; check PR #5 Actions before any review.
+## Verified
+- GitHub Actions run [39391233300](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391233300): **SUCCESS**, disposable WordPress+WooCommerce+MySQL, website HTTP, physical sale, cashier rights, manager reconciliation, stock race.
+- GitHub Actions run [39391233199](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391233199): **SUCCESS**, PHP/JS syntax and isolated hooks.
+- Above results apply to implementation commit `c555b145...`; subsequent documentation commits may have new runs to check.
+- Previous POS test failures in development were resolved; refer to prior handoff for details.
 
-## Remaining blockers
-- No public production site, live checkout, payment gateway, shipping, ETBIS/business authorization or approved goods catalog.
-- No true mobile browser/keyboard accessibility QA or production load/backup restore.
-- Need operator/admin staff role separation, reconciliation process for stale POS requests, refunds/returns review, fiscal receipts/tax invoices, power/network failure tests and sustained online-vs-POS races.
-- Existing inventory's trademark sourcing and rights unresolved; unauthorized replicas cannot be advertised or sold.
-- POS is a **prototype only**, real cash/card transactions should NOT use this branch.
+## Still missing
+- Live deployment, persistent staging, real mobile browser and security/restore testing.
+- Power/network interruption recovery, orphan ledger investigation process, audited refund/return/stock adjustment.
+- Online checkout stock reservation failure/reversal, Store API POST coverage and mixed online+physical stock races.
+- Customer payments, verified gateway callbacks, fiscal receipt/invoice, shipping, operator authentication/audit.
+- Legally authorized product stock and rights review; ETBIS/tax/consumer/KVKK and merchant provider onboarding.
 
-## Next tasks
-1. Review stacked PR #1 then PR #5, avoid merge until acceptance; check latest CI.
-2. Add POS manual reconciliation/returns/cashier role authorization and end-to-end browser testing (Issue #3).
-3. Provision persistent private staging with backups, legal sample products, tax and settlement verification.
-4. Test Store API POST cart/checkout, gateway sandbox, concurrent online orders vs physical stock before release.
-5. Update STATUS/HANDOFF after each conversation.
+## Critical launch rule
+Both `ADIM_ENABLE_SALES` and `ADIM_ENABLE_POS` are disabled by default. Real cashier and customer sales must NOT be enabled before the full launch checklist is accepted. Unlicensed/counterfeit branded merchandise must not be listed or sold.
+
+## Next engineering task
+1. Check latest PR #6 CI and review stacked PR diffs (PR #1 -> #5 -> #6).
+2. Build failure-injection integration tests that interrupt each stage and ensure recovery/no duplicate decrement.
+3. Plan audited returns/refunds with stock inspection; cashier must not have refund/manager rights.
+4. Add persistent private staging and actual mobile browser QA. Keep docs synchronized after every coding session.
+
+## Latest reconciliation-race hardening (2026-10-20)
+- Sale-worker ledger completion/failure now only updates requests still in `processing`, so a delayed worker cannot replace a manager's `reviewed` status.
+- [CI 39391923740](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391923740): real WooCommerce integration and concurrent POS stock tests **SUCCESS** for this hardening commit.
+- Documentation-only commits after this run require final PR check before merge.

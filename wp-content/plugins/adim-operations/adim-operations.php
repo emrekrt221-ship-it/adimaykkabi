@@ -10,9 +10,15 @@
 defined('ABSPATH') || exit;
 
 // Keep stock operations isolated from display/business-authorization hooks.
+require_once __DIR__ . '/includes/pos-roles.php';
 require_once __DIR__ . '/includes/pos.php';
 require_once __DIR__ . '/includes/pos-admin.php';
-register_activation_hook(__FILE__, 'adim_pos_install');
+require_once __DIR__ . '/includes/pos-reconciliation.php';
+register_activation_hook(__FILE__, static function (): void {
+    adim_pos_install();
+    adim_pos_install_roles();
+});
+add_action('init', 'adim_pos_install_roles', 20);
 add_action('admin_init', static function (): void {
     if (current_user_can('manage_woocommerce') && get_option('adim_pos_db_version') !== '1') {
         adim_pos_install();
