@@ -103,4 +103,57 @@ $orIds = array_map(static fn($p) => (int) $p->ID, $orQuery->posts);
 adim_integration_assert(in_array($approved->get_id(), $orIds, true), 'reviewed product remains visible with OR filters');
 adim_integration_assert(!in_array($blocked->get_id(), $orIds, true), 'unreviewed product excluded even with OR filters');
 
+
+// Real variable-product stock isolation: one sold size must not change another.
+$sizeAttribute = new WC_Product_Attribute();
+$sizeAttribute->set_name('Beden');
+$sizeAttribute->set_options(['42', '43']);
+$sizeAttribute->set_variation(true);
+$sizeAttribute->set_visible(true);
+
+$variable = new WC_Product_Variable();
+$variable->set_name('ADIM TEST authorized size variants');
+$variable->set_status('publish');
+$variable->set_attributes([$sizeAttribute]);
+$variable->save();
+update_post_meta($variable->get_id(), '_adim_sale_approved', 'yes');
+
+$sizeVariations = [];
+foreach (['42' => 1, '43' => 3] as $size => $quantity) {
+    $child = new WC_Product_Variation();
+    $child->set_parent_id($variable->get_id());
+    $child->set_attributes(['beden' => $size]);
+    $child->set_status('publish');
+    $child->set_regular_price('1299.00');
+    $child->set_manage_stock(true);
+    $child->set_stock_quantity($quantity);
+    $child->save();
+    $sizeVariations[$size] = $child->get_id();
+}
+WC_Product_Variable::sync($variable->get_id());
+adim_integration_assert(
+    (int) wc_get_product($sizeVariations['42'])->get_stock_quantity() === 1,
+    'size 42 starts with 1 unit'
+);
+adim_integration_assert(
+    (int) wc_get_product($sizeVariations['43'])->get_stock_quantity() === 3,
+    'size 43 starts with 3 units'
+);
+adim_integration_assert(
+    (int) wc_update_product_stock($sizeVariations['42'], 1, 'decrease') === 0,
+    'decreasing size 42 updates just its stock'
+);
+adim_integration_assert(
+    (int) wc_get_product($sizeVariations['43'])->get_stock_quantity() === 3,
+    'size 43 unchanged after size 42 adjustment'
+);
+adim_integration_assert(
+    !wc_get_product($sizeVariations['42'])->is_in_stock(),
+    'size 42 unavailable when zero stock'
+);
+adim_integration_assert(
+    (int) wc_update_product_stock($sizeVariations['42'], 1, 'increase') === 1,
+    'restoring size 42 is recorded correctly'
+);
+
 echo 'ADIM real WooCommerce integration smoke checks passed.' . PHP_EOL;
