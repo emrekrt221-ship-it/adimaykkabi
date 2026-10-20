@@ -1,45 +1,40 @@
 # ADIM AYAKKABI — cross-chat handoff
-Last updated 2026-10-20
+Updated 2026-10-20. Read **live GitHub state first**.
 
-## Project and current branch
-Repo: https://github.com/emrekrt221-ship-it/adimaykkabi
-Default branch: `main`
-Active code branch: `feat/mobile-storefront-foundation`
-Draft PR #1: https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1 (unmerged at last check)
+## Current branches / PR
+Repo https://github.com/emrekrt221-ship-it/adimaykkabi
+Default `main`
+PR #1: https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1 — `feat/mobile-storefront-foundation` -> `main`, draft.
+PR #5: https://github.com/emrekrt221-ship-it/adimaykkabi/pull/5 — `feat/in-store-pos-reservations` -> `feat/mobile-storefront-foundation`, draft/stacked.
+Both were UNMERGED on last check. Never branch only from main assuming POS changes are merged.
 
-## Instructions for the next conversation
-1. Inspect live GitHub repo first; read `AGENTS.md`, `docs/STATUS.md`, this handoff, `docs/MASTER_PLAN_FULL.md`, `docs/DECISIONS.md`, `docs/ROADMAP.md`, `docs/RELEASE_CHECKLIST.md`.
-2. Inspect draft PR #1, open issues #2/#3/#4 and latest GitHub Actions runs before editing; GitHub has precedence over stale chat summaries.
-3. Continue with the next uncompleted QA or development task; make focused commits/PRs, verify tests and update STATUS/HANDOFF.
-4. Never assume continued execution in the background. A new session only develops when explicitly requested.
+## Next conversation steps
+1. Read `AGENTS.md`, `docs/STATUS.md`, `docs/MASTER_PLAN_FULL.md`, `docs/POS_OPERATIONS.md`, `docs/DECISIONS.md`, `docs/ROADMAP.md` and `docs/RELEASE_CHECKLIST.md`.
+2. Confirm branches/open PRs and GitHub Actions runs; the repository, not this summary, is authoritative.
+3. Continue next incomplete approved infrastructure task in a small PR. Record **actual** test evidence and outstanding blockers. Update STATUS and SESSION_HANDOFF at end.
+4. ChatGPT does not automatically continue work after a chat ends; user can ask "GitHub'daki adimaykkabi projesine devam et".
 
-## Architecture
-Mobile-first WordPress + WooCommerce, MySQL, HPOS, lightweight custom theme `wp-content/themes/adim` and isolated `wp-content/plugins/adim-operations`. Single physical shoe store and online shop, shared size/color stock. Black/orange/light palette. No Cloudflare in v1. Remote payment provider after approval. GitHub stores only custom source and docs, never secrets/customer data.
+## Product/architecture
+Single physical footwear shop in Turkey + national web sales, mobile-first WordPress/WooCommerce + MySQL/HPOS, lightweight dark/orange theme, optional Redis later; Cloudflare explicitly not used in v1. Size/color SKU stock is common between online and physical sales. Only legally authorized merchandise may be published/sold. User mentioned replica branded footwear; trademark authorization unresolved and no counterfeit goods may be listed or processed.
 
-## Implementation to date
-- Responsive theme with menu, search, cart, shop, category/new arrival, Woo pages.
-- Authorization flag `_adim_sale_approved`; parent status governs child variations. Sale switch `ADIM_ENABLE_SALES` defaults disabled, must be set only in private server configuration AFTER approvals.
-- Catalog/shortcode/REST/Store API guard and denial of unreviewed single product detail; OR meta filters nested under required AND approval, cart/checkout revalidation.
-- `tests/operations-smoke.php` plus actual `tests/integration-wordpress.php` and `tests/storefront-http.sh` run with `.github/workflows/quality.yml` and `.github/workflows/woocommerce-integration.yml`.
-- Size-42 and size-43 stock isolation tested via real WooCommerce stock adjustment (sequential only).
-- Baseline plan `docs/MASTER_PLAN_FULL.md`, this handoff, release checklist and roadmap.
+## Implemented and tested
+PR #1: responsive storefront, catalog eligibility gate and Store API/HTTP tests with `ADIM_ENABLE_SALES` OFF by default.
+PR #5: `includes/pos.php` creates WooCommerce cash/external-terminal order, reserves stock via `wc_reserve_stock_for_order`, reduces with `wc_reduce_stock_levels`, and records unique UUID/idempotency ledger in `wp_adim_pos_requests`. POS only enabled via private `ADIM_ENABLE_POS`, OFF by default.
+`includes/pos-admin.php` creates WooCommerce → Mağaza Satışı secure responsive form, SKU/stock preview, checkout with confirmed physical collection, nonce/capability, admin sale history.
+All failures after stock-reduction attempt preserve order and ledger `needs_review` status for inspection, not automatic delete or retry.
+- Run **39385002564**: PHP/JS/isolated tests PASS.
+- Run **39385002496**: real WordPress+WooCommerce+MySQL integration PASS, including POS 42/43 variant stock, duplicate idempotency, single last stock, admin form disabled/unapproved behavior, two concurrent independent workers competing over last stock and same request key.
+- Initial POS failures **39383645082**, **39383830778** are fixed in later runs and documented; keep fail-closed logic.
+- GitHub workflows: `.github/workflows/quality.yml` and `.github/workflows/woocommerce-integration.yml`.
 
-## Exact tests verified
-- 39381250677 SUCCESS: direct Store API block for unauthorized product.
-- 39381497455 SUCCESS: nested AND authorization with OR existing meta query.
-- 39381786625 SUCCESS: real Woo size variation separate stock.
-- 39382267922 SUCCESS: WordPress/WooCommerce integration and real HTTP homepage/CSS/allowed/denied products (canonical redirects followed).
-- 39382267912: confirm latest static status before merge.
-- Previous runs 39380968767 and 39382080868 FAILED and led to code/test corrections; do not describe those as passed.
+## Unfinished, do not enable real selling
+- Neither PR merged; staging not persistent, no real gateway/hosting, no mobile browser/visual QA, no automatic invoice/receipt.
+- POS operational gaps: reconciliation for `needs_review`/crash/stale `processing` records, refund/return handling, least-privilege cashier role, robust interruption/backup tests.
+- Online checkout gaps: POST Store API, payment sandbox, load tests, shipping/notifications.
+- Legal rights/fiscal, consumer, data protection and banking approval are unmet.
 
-## Safety and launch blockers
-The user mentioned sourcing branded replica shoes. Do not list or enable checkout for counterfeit trademarked products; sourcing/rights must be verified. Manual flag does NOT establish legal entitlement. ETBIS, consumer law, KVKK, gateway approval remain pending. Sales OFF by default. No production hosting or customer payment set up.
-
-## Next precise task
-1. Recheck latest CI for PR #1.
-2. Add browser integration tests (desktop/mobile) and Store API cart/checkout bypass tests. Explore possible admin API access boundaries.
-3. Implement in-store variation stock sync with atomic/idempotent transactions and concurrency tests, not just sequential stock adjustment.
-4. Review draft PR #1 rather than auto-merging, then start small separate PR for POS.
-5. At every stopping point update STATUS and SESSION_HANDOFF with truthful tests/blocked tasks.
-
-Copy/paste into new ChatGPT conversation: "GitHub'daki emrekrt221-ship-it/adimaykkabi projesine devam et. Önce AGENTS.md ve docs/SESSION_HANDOFF.md'yi oku, açık PR ve testlere bak, sonra sıradaki işi geliştir."
+## Immediate next tasks
+1. Review latest CI and PR #1 and #5; merge only after real QA/approval.
+2. Work on issue #3: human-readable POS reconciliation view + adjustment safeguards, crash consistency, audited returns.
+3. Then private staging and mobile real-browser acceptance tests; Store API POST cart/checkout denial regressions.
+4. Keep decisions, ROADMAP, STATUS and this file fresh after the session.
