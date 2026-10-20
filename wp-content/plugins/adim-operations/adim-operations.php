@@ -97,6 +97,28 @@ add_action('plugins_loaded', static function (): void {
         return adim_ops_is_reviewed(wc_get_product((int) $product_id));
     }, 99, 2);
 
+    // Store API single-product routes bypass collection-query filters.
+    // Deny direct public requests for products that have not been reviewed.
+    add_filter('rest_pre_dispatch', static function ($result, $server, $request) {
+        if ($result !== null || !is_object($request) || !method_exists($request, 'get_route')) {
+            return $result;
+        }
+        $route = (string) $request->get_route();
+        if (!preg_match('#^/wc/store/v[0-9]+/products/([0-9]+)(?:/|$)#', $route, $matches)) {
+            return $result;
+        }
+        // Admin REST APIs are separate paths; do not disable authenticated management.
+        $id = (int) $matches[1];
+        if (!function_exists('wc_get_product') || !adim_ops_is_reviewed(wc_get_product($id))) {
+            return new WP_Error(
+                'adim_product_unavailable',
+                __('Ürün bulunamadı.', 'adim-operations'),
+                ['status' => 404]
+            );
+        }
+        return $result;
+    }, 10, 3);
+
     // Block add-to-cart requests separately from WooCommerce's own purchasability check.
     add_filter('woocommerce_add_to_cart_validation', static function ($valid, $product_id, $quantity = 1, $variation_id = 0): bool {
         if (!$valid || !function_exists('wc_get_product')) {
