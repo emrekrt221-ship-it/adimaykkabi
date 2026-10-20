@@ -42,3 +42,8 @@ Idempotent physical sale orders with unique MySQL request-key ledger; Woo stock 
 - Store API POST and online checkout vs physical POS concurrency.
 - Payment processor approval, lawful sourcing of real catalog, applicable ETBIS/KVKK/consumer/tax compliance.
 - Both switches default OFF, no live seller account or payment keys saved.
+
+## Latest code change and test
+- `wp-content/plugins/adim-operations/includes/pos.php`: conditional ledger completion/failure updates now require `status=processing`; manager-reviewed entries are not overwritten by late workers.
+- `tests/pos-reconciliation.php`: regression test of conditional review-state preservation.
+- [Run 39391923740](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391923740) SUCCESS: real WP/WooCommerce/MySQL suite and two-process stock race. Latest docs-only commits may have newer runs.
