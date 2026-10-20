@@ -36,6 +36,10 @@ The page is restricted to `manage_woocommerce`. A cashier cannot dismiss an exce
 6. The system atomically changes ledger status to `reviewed` and records the manager note on the WooCommerce order. It does **not** cancel, refund, fulfill, reserve or restore stock.
 7. If the ledger has no linked order or the order ID/request key does not match, the record cannot be cleared in the UI. Escalate to technical investigation.
 
+## Delayed-worker protection
+
+After the manager marks a stale request `reviewed`, the POS worker's completion and failure handlers will only update a ledger row that is still `processing`. A worker that resumes after a manager acknowledgment cannot silently overwrite the recorded review. The WooCommerce order/stock still requires separate investigation if a worker resumes exceptionally late.
+
 ## Safety notes
 - Marking `reviewed` records an acknowledgment, **not proof** that payment/stock were correct. It must never automatically resume checkout.
 - `ADIM_ENABLE_POS` remains OFF by default, even if cashier role exists.
