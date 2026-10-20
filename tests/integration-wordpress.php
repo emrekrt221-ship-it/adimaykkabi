@@ -70,6 +70,17 @@ foreach ((array) $data as $row) {
 adim_integration_assert(in_array($approved->get_id(), $ids, true), 'approved product returned by Store API');
 adim_integration_assert(!in_array($blocked->get_id(), $ids, true), 'unreviewed product absent from Store API');
 
+// Specific Store API detail endpoints must respect the same review gate.
+$approvedDetail = rest_do_request(new WP_REST_Request('GET', '/wc/store/v1/products/' . $approved->get_id()));
+adim_integration_assert($approvedDetail->get_status() === 200, 'approved Store API detail visible');
+$blockedDetail = rest_do_request(new WP_REST_Request('GET', '/wc/store/v1/products/' . $blocked->get_id()));
+adim_integration_assert($blockedDetail->get_status() === 404, 'unreviewed Store API detail not found');
+
+// Native add-to-cart checks should reject even if a request bypasses product listing.
+$cart = new WC_Cart();
+adim_integration_assert((bool) $cart->add_to_cart($approved->get_id(), 1), 'approved sample adds to test cart');
+adim_integration_assert(!$cart->add_to_cart($blocked->get_id(), 1), 'unreviewed sample denied by add-to-cart');
+
 // Check a direct product page query hook on its corresponding WP_Query.
 $query = new WP_Query(['post_type' => 'product', 'posts_per_page' => 25]);
 $visibleIds = array_map(static fn($p) => (int) $p->ID, $query->posts);
