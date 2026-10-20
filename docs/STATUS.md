@@ -38,3 +38,8 @@ Both `ADIM_ENABLE_SALES` and `ADIM_ENABLE_POS` are disabled by default. Real cas
 2. Build failure-injection integration tests that interrupt each stage and ensure recovery/no duplicate decrement.
 3. Plan audited returns/refunds with stock inspection; cashier must not have refund/manager rights.
 4. Add persistent private staging and actual mobile browser QA. Keep docs synchronized after every coding session.
+
+## Latest reconciliation-race hardening (2026-10-20)
+- Sale-worker ledger completion/failure now only updates requests still in `processing`, so a delayed worker cannot replace a manager's `reviewed` status.
+- [CI 39391923740](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391923740): real WooCommerce integration and concurrent POS stock tests **SUCCESS** for this hardening commit.
+- Documentation-only commits after this run require final PR check before merge.
