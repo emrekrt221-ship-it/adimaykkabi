@@ -9,6 +9,16 @@
  */
 defined('ABSPATH') || exit;
 
+// Keep stock operations isolated from display/business-authorization hooks.
+require_once __DIR__ . '/includes/pos.php';
+register_activation_hook(__FILE__, 'adim_pos_install');
+add_action('admin_init', static function (): void {
+    if (current_user_can('manage_woocommerce') && get_option('adim_pos_db_version') !== '1') {
+        adim_pos_install();
+    }
+});
+
+
 /**
  * Keep checkout closed until a reviewed operator deployment explicitly enables it.
  * Add define('ADIM_ENABLE_SALES', true); to private server configuration ONLY
