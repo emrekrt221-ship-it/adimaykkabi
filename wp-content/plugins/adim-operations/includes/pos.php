@@ -157,7 +157,7 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
         $order->update_status('completed', 'ADIM fiziki mağaza satışı; harici tahsilat personel tarafından teyit edildi.');
         $saved = $wpdb->update($table,
             ['order_id' => $order->get_id(), 'status' => 'completed', 'updated_at' => current_time('mysql', true)],
-            ['request_key' => $request_key], ['%d', '%s', '%s'], ['%s']);
+            ['request_key' => $request_key, 'status' => 'processing'], ['%d', '%s', '%s'], ['%s', '%s']);
         if ($saved !== 1) {
             throw new RuntimeException('İşlem kaydı sonlandırılamadı; sipariş elle incelenmeli.');
         }
@@ -181,10 +181,12 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
                 $order->delete(true);
             }
         }
+        // Never overwrite a manager's already-recorded review of a stale
+        // request if a delayed worker unexpectedly resumes after 15 minutes.
         $wpdb->update($table, [
             'status' => ($stock_reduced || $reduce_attempted) ? 'needs_review' : 'failed',
             'updated_at' => current_time('mysql', true),
-        ], ['request_key' => $request_key], ['%s', '%s']);
+        ], ['request_key' => $request_key, 'status' => 'processing'], ['%s', '%s'], ['%s', '%s']);
         return new WP_Error('adim_pos_failed', $e->getMessage());
     }
 }
