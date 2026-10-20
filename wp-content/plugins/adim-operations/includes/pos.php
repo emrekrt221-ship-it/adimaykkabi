@@ -97,6 +97,7 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
 
     $order = null;
     $stock_reduced = false;
+    $reduce_attempted = false;
     try {
         $product_id = (int) wc_get_product_id_by_sku($sku);
         $product = $product_id ? wc_get_product($product_id) : false;
@@ -138,10 +139,17 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
         // stock held by online checkout; do NOT modify the _stock meta directly.
         wc_reserve_stock_for_order($order);
 
+        $reduce_attempted = true;
         wc_reduce_stock_levels($order->get_id());
-        $line_items = $order->get_items('line_item');
+        // Read the persisted order-item metadata, not a possibly stale in-memory item.
+        $fresh_order = wc_get_order($order->get_id());
+        $line_items = $fresh_order ? $fresh_order->get_items('line_item') : [];
+        if (count($line_items) !== 1) {
+            throw new RuntimeException('Sipariş satırı doğrulanamadı; kayıt inceleme bekliyor.');
+        }
         foreach ($line_items as $item) {
-            if ((int) $item->get_meta('_reduced_stock', true) !== $quantity) {
+            $reduced = (int) wc_get_order_item_meta($item->get_id(), '_reduced_stock', true);
+            if ($reduced !== $quantity) {
                 throw new RuntimeException('Stok düşümü doğrulanamadı; kayıt inceleme bekliyor.');
             }
         }
@@ -155,8 +163,9 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
         }
         return $order;
     } catch (Throwable $e) {
-        // Never delete potentially charged or stock-reduced orders. Preserve
-        // ledger for manual reconciliation instead of allowing a duplicate retry.
+        // Never delete an order after an attempted stock reduction. Even if
+        // order-item metadata is stale or missing, stock may have changed.
+        // Keep the order and request key for reconciliation, never silently retry.
         if ($order instanceof WC_Order) {
             $items = $order->get_items('line_item');
             foreach ($items as $item) {
@@ -165,7 +174,7 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
                     break;
                 }
             }
-            if ($stock_reduced) {
+            if ($stock_reduced || $reduce_attempted) {
                 $order->add_order_note('ADIM: fiziksel satış başarısız sonuçlandı; stok düşülmüş olabilir. Elle inceleyin.');
             } else {
                 wc_release_stock_for_order($order);
@@ -173,7 +182,7 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
             }
         }
         $wpdb->update($table, [
-            'status' => $stock_reduced ? 'needs_review' : 'failed',
+            'status' => ($stock_reduced || $reduce_attempted) ? 'needs_review' : 'failed',
             'updated_at' => current_time('mysql', true),
         ], ['request_key' => $request_key], ['%s', '%s']);
         return new WP_Error('adim_pos_failed', $e->getMessage());
