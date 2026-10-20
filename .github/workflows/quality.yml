@@ -21,10 +21,14 @@ jobs:
           coverage: none
       - name: PHP syntax
         run: |
-          find wp-content -type f -name '*.php' -print0 | xargs -0 -r -n1 php -l
+          find wp-content tests -type f -name '*.php' -print0 | xargs -0 -r -n1 php -l
       - name: JavaScript syntax
         run: |
           find wp-content -type f -name '*.js' -print0 | xargs -0 -r -n1 node --check
+      - name: Sales disabled by default (isolated hooks)
+        run: php tests/operations-smoke.php
+      - name: Approved sandbox sales (isolated hooks)
+        run: php tests/operations-smoke.php --enabled
       - name: Check forbidden committed configuration
         shell: bash
         run: |
