@@ -60,7 +60,7 @@ fi
 grep -q 'ADIM TEST approved sample' /tmp/adim-approved.html
 echo "PASS: reviewed product detail is visible to buyer"
 
-blocked_http=$(curl --silent --show-error --output /tmp/adim-blocked.html --write-out '%{http_code}' "$BASE/?post_type=product&p=$blocked")
+blocked_http=$(curl --silent --show-error --location --max-redirs 5 --output /tmp/adim-blocked.html --write-out '%{http_code}' "$BASE/?post_type=product&p=$blocked")
 if [[ "$blocked_http" != "404" ]]; then
     echo "Unreviewed product expected 404; got $blocked_http"
     exit 1
