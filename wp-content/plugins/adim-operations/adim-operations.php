@@ -41,12 +41,19 @@ function adim_ops_reviewed_query(array $args): array
     $existing = isset($args['meta_query']) && is_array($args['meta_query'])
         ? $args['meta_query']
         : [];
-    $existing[] = [
+    $review = [
         'key' => '_adim_sale_approved',
         'value' => 'yes',
         'compare' => '=',
     ];
-    $args['meta_query'] = $existing;
+
+    // WooCommerce and third-party filters can supply their own OR relation.
+    // Appending the review condition to an OR query would allow unreviewed
+    // items through. Preserve the original expression in a nested group, and
+    // REQUIRE review by joining the two groups with AND.
+    $args['meta_query'] = $existing
+        ? ['relation' => 'AND', $existing, $review]
+        : [$review];
     return $args;
 }
 
