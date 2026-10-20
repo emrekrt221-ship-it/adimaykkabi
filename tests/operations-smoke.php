@@ -99,13 +99,26 @@ check($enabled, apply_filters('woocommerce_add_to_cart_validation', true, 101, 1
 check(false, apply_filters('woocommerce_add_to_cart_validation', true, 102, 1, 202), 'unreviewed add-to-cart');
 check(false, apply_filters('woocommerce_add_to_cart_validation', false, 101, 1, 201), 'existing cart failure preserved');
 $args = apply_filters('woocommerce_shortcode_products_query', ['meta_query' => [['key' => 'size', 'value' => '42']]]);
-check(2, count($args['meta_query']), 'shortcode query retains other filters');
+check('AND', $args['meta_query']['relation'], 'shortcode query requires reviewed AND original filter');
+check('size', $args['meta_query'][0][0]['key'], 'original shortcode filter retained');
 check('_adim_sale_approved', $args['meta_query'][1]['key'], 'shortcode query review gate');
+$orArgs = apply_filters('woocommerce_shortcode_products_query', [
+    'meta_query' => [
+        'relation' => 'OR',
+        ['key' => 'shoe_size', 'value' => '42'],
+        ['key' => 'color', 'value' => 'black'],
+    ],
+]);
+check('AND', $orArgs['meta_query']['relation'], 'OR filter is guarded by AND');
+check('OR', $orArgs['meta_query'][0]['relation'], 'nested OR logic preserved');
+check('_adim_sale_approved', $orArgs['meta_query'][1]['key'], 'review check cannot be bypassed through OR');
+
 $args = apply_filters('woocommerce_rest_product_object_query', ['post_type' => 'product']);
 check('_adim_sale_approved', $args['meta_query'][0]['key'], 'REST query review gate');
 $query = new ADIM_Query_Mock(['post_type' => 'product', 'meta_query' => [['key' => 'color', 'value' => 'black']]]);
 do_action('pre_get_posts', $query);
-check(2, count($query->get('meta_query')), 'public product WP_Query review gate');
+check('AND', $query->get('meta_query')['relation'], 'public product WP_Query review gate');
+check('color', $query->get('meta_query')[0][0]['key'], 'public query original filter preserved');
 $query = new ADIM_Query_Mock(['post_type' => 'page']);
 do_action('pre_get_posts', $query);
 check(null, $query->get('meta_query'), 'normal pages unchanged');
