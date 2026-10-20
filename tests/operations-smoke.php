@@ -36,6 +36,7 @@ function add_action($name, $callback, $priority = 10, $argc = 1) {
     $hooks[$name][] = compact('callback', 'priority', 'argc');
 }
 function add_filter($name, $callback, $priority = 10, $argc = 1) { add_action($name, $callback, $priority, $argc); }
+function register_activation_hook($file, $callback): void { /* WP stub for plugin bootstrap. */ }
 function do_action($name, ...$args) {
     global $hooks;
     $items = $hooks[$name] ?? [];
