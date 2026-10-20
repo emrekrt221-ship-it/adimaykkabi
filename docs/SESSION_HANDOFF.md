@@ -1,41 +1,33 @@
-# ADIM AYAKKABI — cross-chat handoff
-
-Date: 2026-10-20
+# ADIM AYAKKABI — cross-chat continuation handoff
+Updated: 2026-10-20
 Repository: https://github.com/emrekrt221-ship-it/adimaykkabi
-Default branch: `main`
-Feature branch: `feat/mobile-storefront-foundation`
-Draft PR: https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1
+Branch under development: `feat/mobile-storefront-foundation`
+Draft PR #1: https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1 (targets `main`; not merged as of this handoff).
 
-## START HERE in next ChatGPT session
-1. Connect GitHub and open THIS repository.
-2. Read `AGENTS.md` and `docs/STATUS.md` before any edits.
-3. Read original 21-section requirements in `docs/MASTER_PLAN_FULL.md`, and then `docs/MASTER_PLAN.md`, `docs/ARCHITECTURE.md` if present, `docs/DECISIONS.md`, `docs/ROADMAP.md`, `docs/RELEASE_CHECKLIST.md`.
-4. Inspect PR #1 and CI, and read GitHub issues #2, #3 and #4. Confirm branch/merge state; never rely on this handoff alone if GitHub changed.
-5. Work on the next unfinished task in a small PR; run actual tests and record results. Update this file and STATUS as last step.
-6. The user can ask a new chat "GitHub'daki adimaykkabi projesine devam et; AGENTS.md ve SESSION_HANDOFF.md'yi oku". Work happens only while a chat is actively executing; no automatic background continuity.
+## For the next ChatGPT session
+1. Connect GitHub; read `AGENTS.md`, `docs/STATUS.md`, this file, `docs/MASTER_PLAN_FULL.md`, `docs/DECISIONS.md`, `docs/ROADMAP.md`, and `docs/RELEASE_CHECKLIST.md`.
+2. Check GitHub branch and PR status, CI results and open issues #2, #3, #4 before editing. GitHub's current state overrides these historical statements.
+3. Continue the next unfinished task, commit tested changes on a feature branch and maintain an auditable PR. No background execution between chat sessions.
+4. Update `docs/STATUS.md` + this handoff with exact test evidence and next step every session.
 
-## Product
-Single physical footwear shop in Reyhanlı, selling eligible products through a mobile-first WooCommerce site across Turkey. Stock by model/color/size shared with physical retail. WooCommerce HPOS/MySQL, lean custom PHP theme, isolated operations plugin. Black #151515, orange #F57C00, off-white #F7F7F5. Cloudflare deliberately omitted in v1. Low cost but reliable SSL, backup, gateway sandbox and compliant release.
+## Product scope and decisions
+Single physical shoe shop, mobile-first WooCommerce storefront and shared physical/online variation stock by model/color/size, Turkish consumer sales, black/orange/white. MySQL + HPOS. Lightweight custom PHP theme + isolated operations plugin. No Cloudflare initially. Avoid unnecessary plugins and cost.
+Sell **only legally authorized goods**. User mentioned replica branded footwear; trademark compliance unresolved, so no advertising/listing/sale of counterfeit goods. No production payment until legal and provider approval. No secrets, card data or customer PII in repo.
 
-## What changed in PR #1
-- Theme: functions, header, homepage, footer, new `assets/css/storefront.css`, `assets/js/navigation.js`, `woocommerce.php`, `page.php`.
-- Plugin: `wp-content/plugins/adim-operations/adim-operations.php` first prototype product-review/purchasability guard (not a full compliance mechanism).
-- CI: `.github/workflows/quality.yml`.
-- Docs: `docs/MASTER_PLAN_FULL.md`, `docs/RELEASE_CHECKLIST.md`, updated ROADMAP/STATUS/DECISIONS/DEVELOPMENT/HANDOFF.
-- Issues: #2 staging + responsive QA; #3 variant stock + store POS; #4 legal approval gate/API hardening.
+## Changes already present in PR #1
+- Theme `wp-content/themes/adim` with responsive header/navigation/search/cart, category/new arrival landing, product and WordPress page templates.
+- Operations plugin v0.2.0: manual product-review flag, parent variation check, disable purchase unless reviewed and global sales switch enabled, product visibility/queries, add-to-cart and existing-cart checks, unreviewed direct URL 404 handling. **Default switch OFF**; requires private server constant `ADIM_ENABLE_SALES` set to true for test/launch only after acceptance.
+- `tests/operations-smoke.php` and Actions workflow execute isolated PHP/Woo mock tests with switch both OFF and ON.
+- Complete source plan in `docs/MASTER_PLAN_FULL.md`; release checklist, decisions and roadmap.
 
-## Verified and unverified
-- GitHub Actions workflow run 39343272480 PASSED PHP and JS lint checks.
-- Full WordPress/WooCommerce staging and browser test NOT DONE. Last-stock concurrency, card payment and shipping NOT DONE.
-- PR #1 draft, not merged. Always check current CI status and review.
-- User acquired replica footwear; their legal trademark authorization is unresolved. No counterfeit-marked merchandise may be advertised/listed/sold. No real checkout enablement before merchant, regulatory and payment approvals.
-- Never store secrets, production customer data, actual cards, or payment keys in repo.
+## Test evidence
+- **Run 39380197239 = success**: PHP syntax, JS syntax, disabled/enabled isolated operations tests, secrets filename check.
+- PHP 8.4 local mock tests: pass both switch paths.
+- No real WordPress/WooCommerce, WC Store API/REST, browser, payments, deployment or concurrency tests have happened. Cannot call current system production ready.
+- All PR #1 checks should be re-read after further commits.
 
-## Next precise action
-Open PR #1, ensure latest CI is green, perform WooCommerce staging QA with authorized sample products. Review catalog restriction in WC Store API, product REST and direct URL before launch. Then implement physical POS inventory with idempotent stock operation and tests.
-
-## Always update
-`docs/STATUS.md`: truthful completed/blocked/tested.
-`docs/SESSION_HANDOFF.md`: context, current branch/PR and next concrete step.
-`docs/DECISIONS.md`: changes to architecture.
-`docs/ROADMAP.md`: only check off when accepted/tested.
+## Immediate next steps
+A. Review/QA PR #1, then provision a private WordPress+WooCommerce staging environment.
+B. Exercise unauthorized/approved products in native Woo catalog, Store API/REST, product direct URL, variations, carts, all payment paths. Correct any bypass; manual approval is not legal verification.
+C. Implement inventory/POS and test last-unit stock race and idempotency; only then payment gateway sandbox/shipping.
+D. Keep master plan and status synchronized. User can start next chat: "GitHub'daki adimaykkabi projesine devam et, AGENTS.md ve SESSION_HANDOFF.md'yi oku."
