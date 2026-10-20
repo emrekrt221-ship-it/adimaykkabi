@@ -1,27 +1,24 @@
-# ADIM AYAKKABI roadmap
-Updated 2026-10-20. [x] means code + focused CI exists; merge/deployment may remain pending.
+# ADIM AYAKKABI roadmap (2026-10-20)
+A checked task means implementation + focused test exists in a draft PR; it does NOT mean merged, deployed or legally approved.
 
-- [x] ADIM-01a: GitHub repo and persistent project/handoff documentation.
-- [x] ADIM-02a/b: Initial responsive WooCommerce theme, header/search/cart/catalog shell (draft PR #1).
-- [x] ADIM-11a/b: Product authorization and Store API single-product guard, direct HTML 404, OR catalog filter regression (draft PR #1).
-- [x] ADIM-12a: PHP/JS syntax, mock tests, real ephemeral WP/Woo/MySQL and basic HTTP CI.
-- [x] ADIM-04a: Real Woo variation 42/43 stock isolation in CI.
-- [x] ADIM-05a: Physical store sale prototype: UUID ledger, WooCommerce reservation/reduction, validated stock/order, and reviewed product check (draft PR #5).
-- [x] ADIM-05b: POS single vs duplicate requests, two-process same last-unit race, and actual variation SKU CI test (draft PR #5).
-- [x] ADIM-10a: Responsive admin cashier SKU search, nonce/capability, payment confirmation and safe default-disabled state (draft PR #5).
-- [ ] ADIM-01b: Persistent staging server, SSL, backups and restore test.
-- [ ] ADIM-02c: Actual mobile browser and keyboard/accessibility review.
-- [ ] ADIM-03: Category/size/price filtering, product detail and full checkout UX.
-- [ ] ADIM-04b: Bulk import/validate SKU, photos, cost and supplier reference, audit.
-- [ ] ADIM-05c: POS reconciliation of interrupted/stale records, staff roles, refunds and receipt/tax processes.
-- [ ] ADIM-06: Online checkout and stock reserve/release under payment failure and mixed online-vs-physical race tests.
-- [ ] ADIM-07: Approved payment processor sandbox, verified notifications, idempotency.
-- [ ] ADIM-08: Shipping, store pickup, email and tracking.
-- [ ] ADIM-09: Returns and refunds with inspection-before-restock.
-- [ ] ADIM-10b: Staff role separation and reporting.
-- [ ] ADIM-11c: Trademark/legal merchandise rights, ETBIS, KVKK and consumer information; gateway underwriting.
-- [ ] ADIM-12b: Backups, load tests, recovery, production security review.
-- [ ] ADIM-13: Consent-aware analytics, SEO and Instagram attribution.
-- [ ] ADIM-14: Optional barcode scanner, Redis and shipping automation after validation.
+- [x] Repo/architecture/hand-off files and full 21-section master plan (PR #1).
+- [x] Woo mobile theme: search/cart/category/home/catalog starter (PR #1).
+- [x] Product approval guard, Store API detail/HTTP checks and CI (PR #1).
+- [x] Woo variation size stock isolation and basic contention tests (PR #5).
+- [x] Woo physical sale via order + stock reservation with request-key idempotency (PR #5).
+- [x] Responsive cashier admin screen, SKU search, collection method and nonce (PR #5).
+- [x] Isolated POS cashier role and manager-only reconciliation with Woo audit notes (PR #6).
+- [x] Two-process sale concurrency and role/reconciliation integration tests (PRs #5/6).
+- [ ] POS interruption and crash recovery tests, stale processing investigation/repair workflow.
+- [ ] Audited refunds, returns and stock inspection before replenishment.
+- [ ] Permanent secure staging with SSL, offsite backup and restore tests.
+- [ ] Real browser/mobile accessibility and performance QA.
+- [ ] Authorized/legal products data model, category filters, photos/SKU import and search.
+- [ ] Online cart and checkout with failure/reversal/Store API POST and physical stock mixed contention.
+- [ ] Approved card gateway sandbox and verified callback idempotency.
+- [ ] Shipping, in-store pickup, tracking, notifications and order history.
+- [ ] Tax/fiscal receipt/invoice and merchant, trademark, ETBIS, consumer and privacy readiness.
+- [ ] Staff operations reporting and stock reconciliation dashboard.
+- [ ] Optional Redis/CDN only with measured need; no Cloudflare for v1.
 
-Live acceptance criteria: reviewed and merged code; real staging QA including interruption cases; legal merchandise, fiscal, security and payment/merchant approvals. No live sale based on green CI alone.
+Launch definition: approved legal inventory and financial/legal terms, production QA & security, reviewed/merged PRs, tested staging, proper merchant payment and fulfillment.
