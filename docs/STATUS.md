@@ -70,3 +70,8 @@ Production: NOT DEPLOYED. No real payments, shipments, or approved products onli
 - [Run 39568663982](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663982) **SUCCESS**: PHP/WooCommerce/MySQL test suite, Store API POST 403 + revoked cart 409 + unchanged order count, actual HTTP, Chromium homepage/mobile navigation/product/cart/empty-checkout redirection and screenshots.
 - [Static checks 39568663927](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663927) **SUCCESS**. These runs are on code commit `ecf8a1f7`; docs-only commits will trigger newer runs before merge.
 - This tests CLOSED-SALES checkout, **not** a complete payable guest order, shipping, live payments or verified legal inventory. All production sales remain disabled.
+
+## Closed cart CTA improvement — 2026-10-21
+- Native classic Woo cart's `woocommerce_button_proceed_to_checkout` action is removed when online sales are disabled; the cart's honest closed-sales notice remains. Block-cart UI uses different controls and remains covered by the server-side Store API checkout guard; block-specific visual QA is still required.
+- [CI 39569174873](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39569174873) **SUCCESS**: PHP + real WordPress/WooCommerce/MySQL, new classic-cart checkout-button guard, Store API 403/409 validation, real Chromium mobile/home/product/cart/checkout, screenshot artifacts. Code checks for commit `ed31651c` [39569174869](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39569174869) **SUCCESS**.
+- `docs/CHECKOUT_JOURNEY.md` explains the empty-checkout redirect and absence of payments. Docs-only PR head may trigger newer CI; inspect latest before merge.
