@@ -40,3 +40,11 @@ Production: NOT DEPLOYED. No real payments, shipments, or approved products onli
 3. Implement physical inventory sale/return using WooCommerce SKU variation stock with permissions, idempotency and stock-race tests; preferably separate PR after PR #1 review.
 4. Establish private staging environment before payment gateway development.
 5. Update `docs/SESSION_HANDOFF.md` after each session.
+
+## Parallel customer storefront PR #10 — 2026-10-21
+- [Draft PR #10](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/10), `feat/mobile-catalog-shopping-ux` -> `feat/mobile-storefront-foundation`. This UI branch is PARALLEL to the deeper POS/returns branch #5–#9; it deliberately does not contain physical POS or restock implementation.
+- Native WooCommerce catalog: optional global `pa_beden` / Beden taxonomy filter, safe/validated GET slug, AND with existing taxonomy filters and separate reviewed-product controls, reset filter and no-JS fallback.
+- Responsive, lightweight product cards and native variation selectors, mobile touch targets, fitting guidance details/summary; no new framework, CDN or Cloudflare.
+- [Real WooCommerce catalog CI 39564596521](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39564596521) succeeded for approved 42 vs 43 and blocked 42, invalid filter, and markup.
+- New Chromium mobile browser tests at 360/390/768/1280px and synthetic product detail; see `tests/browser-mobile.mjs`. Browser CI run launched, result must be checked before calling browser QA complete.
+- No live deployment, payment, actual product photos or real device/a11y verification. Any customer-facing catalog must contain only legally authorized goods.
