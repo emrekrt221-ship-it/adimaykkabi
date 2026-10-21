@@ -1,49 +1,37 @@
-# ADIM AYAKKABI — cross-chat continuation
-Updated 2026-10-20. Read GitHub live state first.
+# ADIM AYAKKABI — next-chat handoff
+Updated: 2026-10-21
+Repository: https://github.com/emrekrt221-ship-it/adimaykkabi
 
-## Current repo / PR dependency chain
-Repo: https://github.com/emrekrt221-ship-it/adimaykkabi
-1. [PR #1](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1): mobile storefront `feat/mobile-storefront-foundation` -> `main`.
-2. [PR #5](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/5): POS and stock `feat/in-store-pos-reservations` -> `feat/mobile-storefront-foundation`.
-3. [PR #6](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/6): limited cashier roles and reconciliation `feat/pos-reconciliation-and-cashier-role` -> `feat/in-store-pos-reservations`.
-These are **stacked draft PRs**, NOT merged as of this note; do NOT build new features directly on `main` without reviewing dependency order.
+## Start here
+1. **Check current GitHub**, not remembered progress. Main `CURRENT_DEVELOPMENT.md` points to active branch.
+2. Four stacked draft PRs, none merged at last check: [#1 storefront](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1) → [#5 POS stock](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/5) → [#6 roles/reconciliation](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/6) → [#7 crash audit](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/7). Most complete branch: `test/pos-crash-recovery-audit`, based on `feat/pos-reconciliation-and-cashier-role`.
+3. Read `AGENTS.md`, this `docs/SESSION_HANDOFF.md`, `docs/STATUS.md`, `docs/MASTER_PLAN_FULL.md`, `docs/POS_OPERATIONS.md`, `docs/POS_RECONCILIATION.md`, `docs/POS_CRASH_RECOVERY.md`, `docs/ROADMAP.md`, `docs/DECISIONS.md` and `docs/RELEASE_CHECKLIST.md`.
+4. Review PR/CI and choose next incomplete task; work on new focused branch; test before claims; update STATUS/HANDOFF at session end. Never merge draft production POS/checkout flows without acceptance.
 
-## How the next ChatGPT session resumes
-1. GitHub connector: read main `CURRENT_DEVELOPMENT.md`, then THIS branch's `AGENTS.md`, `docs/STATUS.md`, `docs/MASTER_PLAN_FULL.md`, `docs/POS_OPERATIONS.md`, `docs/POS_RECONCILIATION.md`, `docs/ROADMAP.md`, `docs/DECISIONS.md`, `docs/RELEASE_CHECKLIST.md`.
-2. Inspect branch, open PRs, commit status, GitHub Actions runs and issue #3. GitHub current state overrides this snapshot.
-3. Continue next unfinished task, test with actual WP+WooCommerce/MySQL CI and record truthful status. Never merge unreleased payment/POS flow blindly.
-4. Update STATUS and SESSION_HANDOFF before stopping. Changes only happen while chat is actively working.
+## Architecture and restrictions
+Single-store footwear e-commerce: lightweight WordPress + WooCommerce, MySQL/HPOS, shared model/color/size SKU stock with physical shop. Black/orange/white, no Cloudflare in v1. `ADIM_ENABLE_POS` and `ADIM_ENABLE_SALES` are OFF by default. POS uses Woo order + Woo reserve/reduce + UUID idempotency ledger; cashier has least-privilege role, Woo manager can review interrupted requests. No live payments or shipping. Only legally authorized merchandise; user mentioned branded replicas with unverified legal entitlement. No selling/listing counterfeit trademarked products.
 
-## Architectural decisions
-One Reyhanlı footwear retailer with national web sales; WordPress + WooCommerce/MySQL/HPOS and lightweight responsive theme. Shared per-size/color stock, low-cost single-store architecture, no Cloudflare in v1. Separate operations plugin. Sales are default disabled by `ADIM_ENABLE_SALES` and `ADIM_ENABLE_POS`, set only in private server config after full approvals. ONLY merchandise with legal sales authorization, not counterfeit branded replicas.
+## Prior PRs
+- #1 mobile storefront/theme, product guard, real WP/Woo HTTP integration.
+- #5 Woo-backed physical POS, cashier screen, per-size stock and concurrent two-worker last-unit tests.
+- #6 `adim_cashier` role, manager-only reconciliation, audit notes and late worker protection. Run 39392125050 SUCCESS.
 
-## Already implemented on PR #1
-Responsive storefront, Woo product eligibility checks, public Store API/HTML product test coverage, PHP/JS and real WP integration CI.
+## New PR #7 work
+- `wp-content/plugins/adim-operations/includes/pos.php` has test-only crash checkpoints (requires explicit WP CLI/test flag), enforces order/ledger link success.
+- `wp-content/plugins/adim-operations/includes/pos-reconciliation.php` adds manager-only read-only orphan order candidate detection; persists review evidence in WC order notes BEFORE ledger acknowledgement.
+- `tests/pos-crash-setup.php`, `tests/pos-crash-worker.php`, `tests/pos-crash-verify.php`, `tests/pos-crash-tests.sh` run six separate abrupt process termination scenarios at ledger/order/reservation/stock/status boundaries. CI checks durable MySQL state, no duplicate orders, stock quantities, manager review and orphan handling.
+- Added tests for forbidden cashier lookup in `tests/pos-reconciliation.php` and Woo orphan diagnosis in crash tests.
+- `docs/POS_CRASH_RECOVERY.md` details expected results and manual recovery.
 
-## Already implemented on PR #5
-Idempotent physical sale orders with unique MySQL request-key ledger; Woo stock reserve/reduce (not direct SQL stock editing), per-size variation SKU, cash/external terminal record, responsive cashier search/form, nonce and admin permission. Concurrency tests against two independent cashier workers with one remaining unit.
+## Confirmed CI
+- 39559907569 real WooCommerce + six crash points: SUCCESS.
+- 39560297893 real WooCommerce integration, orphan query and note-first review: SUCCESS.
+- 39560297923 PHP/JS and isolated checks: SUCCESS.
+- Documentation-only latest commits may start newer runs; check before merge.
 
-## Just implemented on PR #6
-- `pos-roles.php`: `adim_cashier` role (read + adim_pos_sell), no manage_woocommerce rights; admin/shop_manager gain dedicated POS capability.
-- `pos-reconciliation.php`: manager-only pending queue; 15-minute stale processing threshold; matching order and 15+ character rationale required for acknowledged review; WooCommerce order notes audit; orphaned requests cannot be dismissed and **no inventory or payment modifications** occur in review.
-- Cashier menu changed to independent WordPress admin menu available only with `adim_pos_sell`.
-- Test `tests/pos-reconciliation.php` added to real WooCommerce integration workflow.
-- Detailed instructions in `docs/POS_RECONCILIATION.md`.
-
-## CI evidence
-- [Run 39391233300](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391233300) SUCCESS: real WP/Woo/MySQL, order, cashier, role, reconciliation, POS stock race and HTTP.
-- [Run 39391233199](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391233199) SUCCESS: PHP/JS and isolated tests.
-- These results precede some documentation-only commits. Always inspect latest checks.
-
-## Remaining, high priority
-- Persistent staging and device/browser tests; never assert production readiness based on CI.
-- Failure injection after order creation, reserved stock, decrement and status update; ensure ledger/out-of-sync recovery behavior.
-- Return/refund stock safety and fiscal receipts; cashier role cannot refund or edit stock.
-- Store API POST and online checkout vs physical POS concurrency.
-- Payment processor approval, lawful sourcing of real catalog, applicable ETBIS/KVKK/consumer/tax compliance.
-- Both switches default OFF, no live seller account or payment keys saved.
-
-## Latest code change and test
-- `wp-content/plugins/adim-operations/includes/pos.php`: conditional ledger completion/failure updates now require `status=processing`; manager-reviewed entries are not overwritten by late workers.
-- `tests/pos-reconciliation.php`: regression test of conditional review-state preservation.
-- [Run 39391923740](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391923740) SUCCESS: real WP/WooCommerce/MySQL suite and two-process stock race. Latest docs-only commits may have newer runs.
+## Next precise tasks
+1. Validate current #7 CI and review diff; keep all four PRs DRAFT.
+2. Create guarded, audited refund/return + inspect-before-restock design and tests; manager only, no automatic refund or stock changes until explicit process.
+3. Run mixed Woo Store API online checkout vs physical POS last-stock tests, including new UUID client retry and hold expiry.
+4. Plan persistent staging, device browser tests, backup/restore, merchant/legal inventory checks.
+5. Update repo documents. New chat prompt: "GitHub'daki adimaykkabi projesine devam et. CURRENT_DEVELOPMENT.md ve PR #7 dalındaki docs/SESSION_HANDOFF.md dosyalarını oku; açık PR/CI'ı doğrula."

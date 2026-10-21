@@ -58,3 +58,8 @@ After the manager marks a stale request `reviewed`, the POS worker's completion 
 - Audited refund/return and stock inspection flows; tax/fiscal receipt integration;
 - Persistent staging, offsite backups and restore, HTTPS and monitoring; online/cart mixed-concurrency test;
 - Product/brand legality, seller and payment-provider approval, applicable ETBIS/consumer/privacy compliance.
+
+## 2026-10-21 interruption audit improvements (draft PR #7)
+- Manager-only `adim_pos_possible_orphan_orders()` lists WooCommerce orders with the same POS UUID when the ledger has no order ID, without linking, completing or modifying them. The cashier cannot perform this lookup.
+- WooCommerce note must be saved before changing ledger to `reviewed`. If the note fails, the ledger stays open; if ledger transition fails, an attempted review note may remain for investigation.
+- [Detailed six-stage crash model](POS_CRASH_RECOVERY.md). Tests use synthetic SKUs, separate WP-CLI PHP processes, actual WooCommerce/MySQL and no physical sale.

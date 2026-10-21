@@ -9,7 +9,9 @@ A checked task means implementation + focused test exists in a draft PR; it does
 - [x] Responsive cashier admin screen, SKU search, collection method and nonce (PR #5).
 - [x] Isolated POS cashier role and manager-only reconciliation with Woo audit notes (PR #6).
 - [x] Two-process sale concurrency and role/reconciliation integration tests (PRs #5/6).
-- [ ] POS interruption and crash recovery tests, stale processing investigation/repair workflow.
+- [x] POS simulated abrupt PHP process exit at six persistence checkpoints, idempotency and manager review tests (PR #7).
+- [x] Read-only manager orphan-order candidate diagnosis and note-first manual audit recording (PR #7).
+- [ ] Physical power/DB crash recovery, interrupted request repair procedure, persistent staging tests.
 - [ ] Audited refunds, returns and stock inspection before replenishment.
 - [ ] Permanent secure staging with SSL, offsite backup and restore tests.
 - [ ] Real browser/mobile accessibility and performance QA.
