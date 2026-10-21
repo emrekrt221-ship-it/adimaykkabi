@@ -45,3 +45,11 @@ Repository: https://github.com/emrekrt221-ship-it/adimaykkabi
 - `tests/pos-returns.php` wired into temporary real WordPress/WooCommerce/MySQL GitHub Actions with role, replay, quantity, inspection, stock and UI controls.
 - Test evidence: initial [run 39561531178](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39561531178) passed core return API (before admin screen was added). Latest UI run must be checked before PR review.
 - Remaining: customer proof-of-purchase identity, fiscal refund integration and inspected stock-restoration workflow, full browser/device, backups, concurrent returns stress, and legal/product rights approvals.
+
+## PR #9 — inspected returned goods: manager-only one-time WooCommerce restock (2026-10-21)
+- Draft [PR #9](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/9): `feat/pos-reviewed-restock` -> `feat/pos-return-inspection` (draft/unmerged, stacked after #8/#7/#6/#5/#1).
+- `includes/pos-restock.php`: independent `adim_return_stock_movements` with UNIQUE return UUID, separate server-only `ADIM_ENABLE_RETURN_RESTOCK` default OFF, manager-only restock after `accepted` physical inspection, original Woo POS order/line + stock reduction validation, authorized product + exact size-managed SKU and Woo refund history check.
+- `includes/pos-restock-admin.php`: manager form with verified-condition and actual-stock checkboxes, WordPress nonce, explanation note; finished or uncertain returns never offer another stock increase.
+- Core WooCommerce stock increment only, **no refund, no order cancellation, no direct stock SQL**. Partially completed/failed movement is `needs_review` or `applying` and refuses retry.
+- Actual WP/WooCommerce/MySQL CI: [run 39563649293](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39563649293) SUCCESS including restock and existing POS/crash test suites, on commit ff20a681b (before docs only). Latest PR head CI must be checked.
+- Remaining: financial refund coordination/races, multiworker restock crash injection, fiscal/receipt integration, persistent staging, browser/a11y, physical legal inventory rights. Code is **not production certified**.
