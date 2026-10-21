@@ -26,6 +26,36 @@ function adim_pos_pending_reviews(): array
 }
 
 /**
+ * Read-only diagnostic for interrupted requests whose ledger has no order link.
+ * Only privileged reviewers may see possible matching WooCommerce orders.
+ * This NEVER repairs an order link, adjusts stock, or dismisses the exception.
+ *
+ * @return WC_Order[]
+ */
+function adim_pos_possible_orphan_orders(string $request_key): array
+{
+    if (!adim_pos_can_reconcile()
+        || !preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $request_key)
+        || !function_exists('wc_get_orders')) {
+        return [];
+    }
+    $candidates = wc_get_orders([
+        'limit' => 3,
+        'type' => 'shop_order',
+        'meta_key' => '_adim_pos_request_key',
+        'meta_value' => $request_key,
+    ]);
+    if (!is_array($candidates)) {
+        return [];
+    }
+    return array_values(array_filter($candidates, static function ($order) use ($request_key): bool {
+        return $order instanceof WC_Order
+            && $order->get_created_via() === 'adim-pos'
+            && $order->get_meta('_adim_pos_request_key') === $request_key;
+    }));
+}
+
+/**
  * Mark a validated, linked WooCommerce order as MANUALLY REVIEWED.
  * Manager must inspect bank/cash receipt, stock and order before acknowledging.
  * Acknowledging never modifies actual inventory or auto-refunds an order.
@@ -78,6 +108,24 @@ function adim_pos_acknowledge_review(string $request_key, string $reason, int $r
         return new WP_Error('adim_pos_review_mismatch', 'İşlem ve sipariş kayıtları uyuşmuyor.');
     }
 
+    // Persist the investigation evidence BEFORE acknowledging the ledger.
+    // An interrupted note write must never leave a "reviewed" row with no
+    // order-based audit trail. A failed row update may leave an attempted
+    // review note, which is safer than an unlogged acknowledgment.
+    try {
+        $note_id = $order->add_order_note(
+            sprintf('ADIM POS inceleme kanıtı (stok değiştirilmedi). Yönetici #%d. Not: %s',
+                $reviewer_id, $reason),
+            0,
+            true
+        );
+    } catch (Throwable $e) {
+        return new WP_Error('adim_pos_review_note_failed', 'İnceleme kanıtı kaydedilemedi; işlem açık bırakıldı.');
+    }
+    if ((int) $note_id <= 0) {
+        return new WP_Error('adim_pos_review_note_failed', 'İnceleme kanıtı kaydedilemedi; işlem açık bırakıldı.');
+    }
+
     // Optimistic update: no concurrent review may claim the same record.
     $changed = $wpdb->query($wpdb->prepare(
         "UPDATE {$table}
@@ -86,15 +134,8 @@ function adim_pos_acknowledge_review(string $request_key, string $reason, int $r
         current_time('mysql', true), $request_key, (int) $row->order_id, $row->status, $row->updated_at
     ));
     if ($changed !== 1) {
-        return new WP_Error('adim_pos_review_race', 'İşlem başka bir yönetici tarafından değiştirildi; ekranı yenileyin.');
+        return new WP_Error('adim_pos_review_race', 'İnceleme kanıtı kaydedildi ama işlem durumu değişti; ekranı yenileyin.');
     }
-    // Retain the audit trail in the HPOS-compatible order note store.
-    $order->add_order_note(
-        sprintf('ADIM manuel POS incelemesi (stok değiştirilmedi). Yönetici #%d. Not: %s',
-            $reviewer_id, $reason),
-        0,
-        true
-    );
     return true;
 }
 
@@ -170,6 +211,14 @@ function adim_pos_render_review_screen(): void
             echo '<p><button class="button button-primary" type="submit">İncelendi Olarak İşaretle (Stok Değişmez)</button></p></form>';
         } else {
             echo '<p><strong>Teknik inceleme gerekli:</strong> Sipariş bulunamadı veya işlem kimliği uyuşmuyor. Bu kayıt ekrandan kapatılamaz.</p>';
+            if ((int) $row->order_id === 0) {
+                $possible_orders = adim_pos_possible_orphan_orders((string) $row->request_key);
+                if ($possible_orders) {
+                    echo '<p><strong>Olası eşleşen WooCommerce siparişleri (yalnızca inceleme):</strong> ';
+                    $ids = array_map(static fn($possible) => '#' . (int) $possible->get_id(), $possible_orders);
+                    echo esc_html(implode(', ', $ids)) . '. Bu siparişleri personel veya geliştirici doğrulamalı; otomatik eşleştirme yapılmaz.</p>';
+                }
+            }
         }
         echo '</section>';
     }

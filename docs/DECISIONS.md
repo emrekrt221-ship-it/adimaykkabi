@@ -17,3 +17,6 @@ ADR-014 (2026-10-20): Default OFF in-store POS `ADIM_ENABLE_POS`. Unique request
 ADR-015 (2026-10-20): POS prototype in draft PR #5 depends on storefront PR #1; manager and accountant must reconcile fiscal and failed-order cases before production.
 ADR-016 (2026-10-20): Least-privilege cashier role `adim_cashier` has only `read` and `adim_pos_sell`. WooCommerce manager/admin owns reconciliation; cashiers cannot review, refund, manage product rights or alter settings.
 ADR-017 (2026-10-20): Review queue is **acknowledgment only** and cannot modify inventory/payment/refund state. Only orders matching POS request ID/origin can be resolved after 15+ character evidence note and optimistic ledger update. Stale processing without order must be escalated; do not auto-delete.
+
+ADR-018 (2026-10-21): POS hard-stop tests are **WP-CLI only** and require explicit `ADIM_POS_TEST_MODE`; no fault injection in production HTTP checkout. Test all six ledger/order/hold/reduction/completion persistence boundaries with real MySQL, no automatic replay.
+ADR-019 (2026-10-21): Orphan order discovery is manager-only and read-only. No automatic linking or cancellation. Persist the WooCommerce investigation note before marking the POS ledger reviewed; note write failure leaves the ledger unresolved. Still no stock/refund mutations in review.
