@@ -9,6 +9,11 @@
 4. WooCommerce's official, vetted payment integration must be configured separately in a safe sandbox after seller eligibility is verified. No payment information, card form, webhook or invented sandbox gateway is committed here.
 5. On the cart and checkout WordPress page (classic shortcode or blocks), the theme shows an accessible progress guide. While sales is OFF it explains why no online order can be placed. The classic checkout review also shows a reminder to check actual address, size, delivery option and final total.
 
+## Closed-sales cart behavior
+- With `ADIM_ENABLE_SALES` OFF, the classic WooCommerce cart removes its default "proceed to checkout" button using the native Woo action; a clear notice explains online purchasing is not yet open.
+- WooCommerce block cart UI may render a different button; never assume a cosmetic control alone is secure. The Store API POST checkout guard remains authoritative.
+- Empty checkout can redirect back to cart under WooCommerce's normal behavior. Browser tests accept and verify that redirect or the on-page checkout explanation, rather than forcing a checkout view without an item.
+
 ## Fail-closed server boundaries
 - `ADIM_ENABLE_SALES` is **OFF** by default, only enabled in a short-lived test process after constructing synthetic products.
 - `adim-operations/includes/checkout-guard.php` rejects `POST /wc/store/vN/checkout` with HTTP 403 and `adim_checkout_disabled` **before the Store API controller can create an order** when disabled. A normal GET product list continues to work.
