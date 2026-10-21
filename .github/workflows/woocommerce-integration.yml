@@ -1,0 +1,58 @@
+name: ADIM WordPress + WooCommerce integration
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  woocommerce-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_test_only
+          MYSQL_DATABASE: adim_test
+          MYSQL_USER: adim_test
+          MYSQL_PASSWORD: adim_test_only
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Configure PHP and WordPress extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mysqli, curl, intl, mbstring, zip, dom, gd
+          coverage: none
+      - name: Install WP CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /tmp/wp-cli.phar
+          php /tmp/wp-cli.phar --info
+      - name: Provision temporary WordPress
+        shell: bash
+        run: |
+          mkdir -p /tmp/adim-wordpress
+          php /tmp/wp-cli.phar core download --path=/tmp/adim-wordpress --allow-root
+          php /tmp/wp-cli.phar config create --path=/tmp/adim-wordpress --dbname=adim_test --dbuser=adim_test --dbpass=adim_test_only --dbhost=127.0.0.1 --skip-check --allow-root
+          php /tmp/wp-cli.phar core install --path=/tmp/adim-wordpress --url=http://127.0.0.1:8888 --title="ADIM CI" --admin_user=ci_admin --admin_password="ci-only-not-production" --admin_email=ci@example.test --skip-email --allow-root
+          php /tmp/wp-cli.phar plugin install woocommerce --activate --path=/tmp/adim-wordpress --allow-root
+          cp -R wp-content/themes/adim /tmp/adim-wordpress/wp-content/themes/adim
+          cp -R wp-content/plugins/adim-operations /tmp/adim-wordpress/wp-content/plugins/adim-operations
+          php /tmp/wp-cli.phar theme activate adim --path=/tmp/adim-wordpress --allow-root
+          php /tmp/wp-cli.phar plugin activate adim-operations --path=/tmp/adim-wordpress --allow-root
+      - name: Execute actual WooCommerce tests
+        run: |
+          php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/integration-wordpress.php" --path=/tmp/adim-wordpress --allow-root
+      - name: Test storefront and product URLs over HTTP
+        run: bash tests/storefront-http.sh

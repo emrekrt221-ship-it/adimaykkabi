@@ -1,23 +1,45 @@
-# Session handoff — 2026-10-20
+# ADIM AYAKKABI — cross-chat handoff
+Last updated 2026-10-20
 
-Repository: emrekrt221-ship-it/adimaykkabi (main).
+## Project and current branch
+Repo: https://github.com/emrekrt221-ship-it/adimaykkabi
+Default branch: `main`
+Active code branch: `feat/mobile-storefront-foundation`
+Draft PR #1: https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1 (unmerged at last check)
 
-## Product decisions
-ADIM AYAKKABI footwear ecommerce; mobile-first WooCommerce with MySQL/HPOS, black/orange theme, no Cloudflare initially, physical store and online stock shared by size/color. Start with low costs and professional performance targets.
+## Instructions for the next conversation
+1. Inspect live GitHub repo first; read `AGENTS.md`, `docs/STATUS.md`, this handoff, `docs/MASTER_PLAN_FULL.md`, `docs/DECISIONS.md`, `docs/ROADMAP.md`, `docs/RELEASE_CHECKLIST.md`.
+2. Inspect draft PR #1, open issues #2/#3/#4 and latest GitHub Actions runs before editing; GitHub has precedence over stale chat summaries.
+3. Continue with the next uncompleted QA or development task; make focused commits/PRs, verify tests and update STATUS/HANDOFF.
+4. Never assume continued execution in the background. A new session only develops when explicitly requested.
 
-## Completed
-GitHub main initialized with README, AGENTS, docs/MASTER_PLAN.md, ROADMAP.md, DECISIONS.md, STATUS.md, DEVELOPMENT.md, this handoff, .gitignore and theme files in wp-content/themes/adim: style.css, functions.php, header.php, footer.php, front-page.php, index.php.
+## Architecture
+Mobile-first WordPress + WooCommerce, MySQL, HPOS, lightweight custom theme `wp-content/themes/adim` and isolated `wp-content/plugins/adim-operations`. Single physical shoe store and online shop, shared size/color stock. Black/orange/light palette. No Cloudflare in v1. Remote payment provider after approval. GitHub stores only custom source and docs, never secrets/customer data.
 
-## Verification
-GitHub writes succeeded. No runtime, PHP lint, WordPress browser test or checkout test has been performed. Do not describe storefront as production-ready.
+## Implementation to date
+- Responsive theme with menu, search, cart, shop, category/new arrival, Woo pages.
+- Authorization flag `_adim_sale_approved`; parent status governs child variations. Sale switch `ADIM_ENABLE_SALES` defaults disabled, must be set only in private server configuration AFTER approvals.
+- Catalog/shortcode/REST/Store API guard and denial of unreviewed single product detail; OR meta filters nested under required AND approval, cart/checkout revalidation.
+- `tests/operations-smoke.php` plus actual `tests/integration-wordpress.php` and `tests/storefront-http.sh` run with `.github/workflows/quality.yml` and `.github/workflows/woocommerce-integration.yml`.
+- Size-42 and size-43 stock isolation tested via real WooCommerce stock adjustment (sequential only).
+- Baseline plan `docs/MASTER_PLAN_FULL.md`, this handoff, release checklist and roadmap.
 
-## Next tasks
-1. Read AGENTS.md and all docs; inspect current repo.
-2. Set up local WordPress/WooCommerce test environment; PHP lint theme.
-3. Implement proper WooCommerce template integration, mobile navigation and product cards; test accessibility.
-4. Build physical store sale stock workflow, verify size-level stock and concurrency.
-5. Add payment sandbox, shipping, legal pages and automated tests before live launch.
-6. Update STATUS and SESSION_HANDOFF at end of each session.
+## Exact tests verified
+- 39381250677 SUCCESS: direct Store API block for unauthorized product.
+- 39381497455 SUCCESS: nested AND authorization with OR existing meta query.
+- 39381786625 SUCCESS: real Woo size variation separate stock.
+- 39382267922 SUCCESS: WordPress/WooCommerce integration and real HTTP homepage/CSS/allowed/denied products (canonical redirects followed).
+- 39382267912: confirm latest static status before merge.
+- Previous runs 39380968767 and 39382080868 FAILED and led to code/test corrections; do not describe those as passed.
 
-## Compliance gate
-User mentioned purchasing replica branded footwear. Do not list, advertise or enable sales of counterfeit trademarked goods. Require legally authorized inventory before publication and real checkout. Never commit secrets.
+## Safety and launch blockers
+The user mentioned sourcing branded replica shoes. Do not list or enable checkout for counterfeit trademarked products; sourcing/rights must be verified. Manual flag does NOT establish legal entitlement. ETBIS, consumer law, KVKK, gateway approval remain pending. Sales OFF by default. No production hosting or customer payment set up.
+
+## Next precise task
+1. Recheck latest CI for PR #1.
+2. Add browser integration tests (desktop/mobile) and Store API cart/checkout bypass tests. Explore possible admin API access boundaries.
+3. Implement in-store variation stock sync with atomic/idempotent transactions and concurrency tests, not just sequential stock adjustment.
+4. Review draft PR #1 rather than auto-merging, then start small separate PR for POS.
+5. At every stopping point update STATUS and SESSION_HANDOFF with truthful tests/blocked tasks.
+
+Copy/paste into new ChatGPT conversation: "GitHub'daki emrekrt221-ship-it/adimaykkabi projesine devam et. Önce AGENTS.md ve docs/SESSION_HANDOFF.md'yi oku, açık PR ve testlere bak, sonra sıradaki işi geliştir."
