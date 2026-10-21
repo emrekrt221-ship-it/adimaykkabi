@@ -13,6 +13,7 @@ Updated: 2026-10-21. **Read here before continuing in a new ChatGPT session.**
 
 **Customer-facing web UI (independent DRAFT PR):**
 - [PR #10 — mobile catalog and size filtering](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/10): `feat/mobile-catalog-shopping-ux` -> `feat/mobile-storefront-foundation` (PR #1). This branch deliberately excludes deep POS/returns code.
+- [PR #11 — WooCommerce cart/checkout guidance + Store API guard](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/11): `feat/checkout-journey-and-guards` -> `feat/mobile-catalog-shopping-ux` (#10). This is the most advanced CUSTOMER UI branch; distinct from POS #5–#9.
 
 **All are drafts and unmerged at this snapshot.** GitHub's latest status takes precedence. Do not merge/rebase branches blindly; plan dependency order.
 
@@ -25,6 +26,9 @@ Updated: 2026-10-21. **Read here before continuing in a new ChatGPT session.**
 - PR #9 real WooCommerce + MySQL once-only restock and previous POS/crash suite: [run 39563929519](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39563929519) PASS; [code checks 39563929497](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39563929497) PASS.
 - PR #10 WooCommerce Beden filter and real Chromium responsive browser checks: [run 39565540676](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39565540676) **PASS** (360/390/768/1280px, menu, no horizontal overflow, product detail). Screenshots artifact ID 12329925612. Initial Chromium CI failures were caused by incorrectly configured temporary test-site asset URLs and have been corrected; this is automated test coverage, not production or operator visual approval.
 - These are disposable CI environments, NOT actual shop, merchant account or continuous staging.
+
+- PR #11 real WordPress+WooCommerce/MySQL + Chromium checkout/cart with native empty-checkout behavior: [run 39568663982](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663982) **PASS**; [code checks 39568663927](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663927) **PASS**. Sales remain default OFF and no merchant payment is tested.
+- Newest UI handoff: [docs/SESSION_HANDOFF.md on PR #11](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/checkout-journey-and-guards/docs/SESSION_HANDOFF.md) and [CHECKOUT_JOURNEY.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/checkout-journey-and-guards/docs/CHECKOUT_JOURNEY.md).
 
 ## Release blockers
 - Both POS and online sales are **OFF** by default; `ADIM_ENABLE_POS`, `ADIM_ENABLE_SALES`, `ADIM_ENABLE_RETURN_INTAKE`, `ADIM_ENABLE_RETURN_RESTOCK` must stay OFF for live use until acceptance.
