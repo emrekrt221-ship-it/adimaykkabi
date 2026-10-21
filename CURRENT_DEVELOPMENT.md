@@ -23,7 +23,7 @@ Updated: 2026-10-21. **Read here before continuing in a new ChatGPT session.**
 
 ## Test evidence
 - PR #9 real WooCommerce + MySQL once-only restock and previous POS/crash suite: [run 39563929519](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39563929519) PASS; [code checks 39563929497](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39563929497) PASS.
-- PR #10 WooCommerce Beden/size query and reviewed inventory tests: [run 39564596521](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39564596521) PASS. Real Chromium mobile browser tests have been added; **check the latest PR #10 run and fix any failures before claiming visual/browser QA passed**.
+- PR #10 WooCommerce Beden filter and real Chromium responsive browser checks: [run 39565540676](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39565540676) **PASS** (360/390/768/1280px, menu, no horizontal overflow, product detail). Screenshots artifact ID 12329925612. Initial Chromium CI failures were caused by incorrectly configured temporary test-site asset URLs and have been corrected; this is automated test coverage, not production or operator visual approval.
 - These are disposable CI environments, NOT actual shop, merchant account or continuous staging.
 
 ## Release blockers
