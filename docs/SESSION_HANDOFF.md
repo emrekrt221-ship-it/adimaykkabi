@@ -76,3 +76,9 @@ Copy/paste into new ChatGPT conversation: "GitHub'daki emrekrt221-ship-it/adimay
 - This tests CLOSED-SALES checkout, **not** a complete payable guest order, shipping, live payments or verified legal inventory. All production sales remain disabled.
 
 Next: inspect latest draft PR #11 state and CI; then implement a disposable **synthetic** guest checkout/shipping address smoke (no card gateway, no real transactions), plus Woo REST cart add-item rejection tests. Keep WordPress/Woo built-in checkout; separate offline-test fixture only if needed. Document existing acceptance limits, never turn on production `ADIM_ENABLE_SALES`.
+
+## 2026-10-21 final PR #11 checkpoint
+- Checkout screen browser CI initially failed assuming an empty checkout always renders. WooCommerce sometimes redirects empty checkout to cart; test now checks both native states and visible closed-sales notice.
+- Additional `inc/checkout.php` `adim_checkout_hide_proceed_when_closed` removes standard classic Woo cart proceed button when the default-off global sales switch is OFF; operations plugin server-side guard remains essential for Woo Blocks/REST.
+- Test `tests/checkout-journey.php` verifies native hook removal; `tests/browser-mobile.mjs` verifies cart/empty-checkout redirect. [Run 39569174873](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39569174873) SUCCESS for all integration/Chromium tests, [39569174869](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39569174869) SUCCESS code checks (before any later docs commits).
+- All PRs remain draft; no real payments or delivery configured. Next: legally neutral synthetic cart-with-products + guest address/shipping test in **isolated** staging without card charge; block CART API variants/revoked products; production requires merchant/legal and gateway approvals, HTTPS hosting, backup/restore.
