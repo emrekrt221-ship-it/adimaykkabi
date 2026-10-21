@@ -9,6 +9,9 @@
  */
 defined('ABSPATH') || exit;
 
+// Checkout is guarded independently of the theme and payment method.
+require_once __DIR__ . '/includes/checkout-guard.php';
+
 /**
  * Keep checkout closed until a reviewed operator deployment explicitly enables it.
  * Add define('ADIM_ENABLE_SALES', true); to private server configuration ONLY
