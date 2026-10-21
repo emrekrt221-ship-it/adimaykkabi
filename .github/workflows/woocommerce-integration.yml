@@ -51,6 +51,12 @@ jobs:
           cp -R wp-content/plugins/adim-operations /tmp/adim-wordpress/wp-content/plugins/adim-operations
           php /tmp/wp-cli.phar theme activate adim --path=/tmp/adim-wordpress --allow-root
           php /tmp/wp-cli.phar plugin activate adim-operations --path=/tmp/adim-wordpress --allow-root
+          # The CLI can infer /adim-wordpress from the temporary path.
+          # HTTP tests mount WP as the webserver root; align both option URLs.
+          php /tmp/wp-cli.phar option update home http://127.0.0.1:8888 --path=/tmp/adim-wordpress --allow-root
+          php /tmp/wp-cli.phar option update siteurl http://127.0.0.1:8888 --path=/tmp/adim-wordpress --allow-root
+          php /tmp/wp-cli.phar option get home --path=/tmp/adim-wordpress --allow-root
+          php /tmp/wp-cli.phar option get siteurl --path=/tmp/adim-wordpress --allow-root
       - name: Execute actual WooCommerce tests
         run: |
           php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/integration-wordpress.php" --path=/tmp/adim-wordpress --allow-root
