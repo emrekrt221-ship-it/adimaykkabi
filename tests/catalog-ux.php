@@ -60,7 +60,7 @@ catalog_assert(adim_catalog_requested_size() === '', 'unrecognized injected size
 
 $_GET['adim_beden'] = '42';
 ob_start();
-do_action('woocommerce_before_shop_loop');
+adim_catalog_render_filter();
 $html = ob_get_clean();
 catalog_assert(str_contains($html, 'Numaraya göre filtrele')
     && str_contains($html, '<option value="42" selected')
@@ -69,7 +69,7 @@ catalog_assert(str_contains($html, 'Numaraya göre filtrele')
     'accessible selected-size filter form renders');
 
 ob_start();
-do_action('woocommerce_single_product_summary');
+adim_catalog_render_size_help();
 $single = ob_get_clean();
 catalog_assert(str_contains($single, 'adim-size-help')
     && str_contains($single, 'Numaramı nasıl seçmeliyim?'),
