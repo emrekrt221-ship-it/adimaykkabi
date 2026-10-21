@@ -37,3 +37,6 @@ Definition of Done for release: reviewed/merged change, passing meaningful real 
 
 - [x] PR #11: closed-sales classic Woo cart proceed button hidden; full WooCommerce/MySQL + Chromium cart/empty-checkout redirect validated in GitHub Actions 39569174873.
 - [ ] Block cart checkout UI review, filled-cart guest checkout with real configured shipping zone (synthetic products, no real payment), REST Store API cart endpoints and payment sandbox after merchant approval.
+
+- [x] Draft PR #12: disposable native WooCommerce guest cart with two synthetic items, actual configured domestic shipping price/total, Woo address requirements, Chromium 390px populated guest checkout, zero orders/payment methods; CI 39573459546 passed.
+- [ ] Extend guest checkout form error scenarios and shipping-zone boundaries, verified real shipping provider rates/receipts, approved merchant payment sandbox with no user payment until legal release requirements.
