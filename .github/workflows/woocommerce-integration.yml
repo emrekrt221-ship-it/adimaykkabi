@@ -58,3 +58,25 @@ jobs:
         run: php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/catalog-ux.php" --path=/tmp/adim-wordpress --allow-root
       - name: Test storefront and product URLs over HTTP
         run: bash tests/storefront-http.sh
+      - name: Install Chromium for real responsive browser tests
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Run real mobile and desktop browser smoke
+        shell: bash
+        run: |
+          php -S 127.0.0.1:8888 -t /tmp/adim-wordpress /tmp/adim-router.php > /tmp/adim-browser-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in {1..20}; do
+            if curl -sf http://127.0.0.1:8888/ > /dev/null; then break; fi
+            sleep 1
+          done
+          node tests/browser-mobile.mjs
+      - name: Upload browser viewport screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: adim-browser-viewport-captures
+          path: browser-screenshots/
+          if-no-files-found: ignore
