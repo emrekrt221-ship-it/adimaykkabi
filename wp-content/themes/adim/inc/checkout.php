@@ -49,20 +49,18 @@ function adim_checkout_render_status(): void
     }
 }
 
-add_action('woocommerce_before_cart', static function (): void {
-    adim_checkout_render_steps('cart');
-    adim_checkout_render_status();
-}, 5);
-
-add_action('woocommerce_before_checkout_form', static function (): void {
-    adim_checkout_render_steps('checkout');
-    adim_checkout_render_status();
+/**
+ * Render the checkout explainer in the page template (also works with empty
+ * carts and Woo blocks where classic Woo hook callbacks are not triggered).
+ */
+function adim_checkout_render_delivery_help(): void
+{
     echo '<div class="adim-checkout-help">';
     echo '<h2>' . esc_html__('Teslimat ve ödeme bilgileri', 'adim') . '</h2>';
     echo '<p>' . esc_html__('Kargo bedeli ve varsa mağazadan teslim seçenekleri, adresinize göre WooCommerce ödeme ekranında hesaplanır. '
         . 'Yalnızca ödeme ekranında gösterilen yöntemleri kullanabilirsiniz.', 'adim') . '</p>';
     echo '</div>';
-}, 5);
+}
 
 /** Make user expectations explicit without inventing carrier or rate metadata. */
 add_action('woocommerce_review_order_before_payment', static function (): void {
