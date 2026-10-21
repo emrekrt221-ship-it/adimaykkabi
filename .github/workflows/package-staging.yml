@@ -1,0 +1,67 @@
+name: Build WordPress staging upload ZIPs
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - test/guest-address-validation
+    paths:
+      - ".github/workflows/package-staging.yml"
+      - "wp-content/themes/adim/**"
+      - "wp-content/plugins/adim-operations/**"
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout specific development branch
+        uses: actions/checkout@v4
+
+      - name: Install PHP CLI and ZIP
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php-cli zip unzip
+
+      - name: Verify WordPress entrypoints and PHP syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s wp-content/themes/adim/style.css
+          test -s wp-content/themes/adim/index.php
+          test -s wp-content/themes/adim/functions.php
+          test -s wp-content/plugins/adim-operations/adim-operations.php
+          find wp-content/themes/adim wp-content/plugins/adim-operations -type f -name '*.php' -print0 |
+            xargs -0 -n 1 php -l
+          grep -q 'Theme Name:' wp-content/themes/adim/style.css
+          grep -q 'Plugin Name:' wp-content/plugins/adim-operations/adim-operations.php
+
+      - name: Build standalone installer ZIPs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          (cd wp-content/themes && zip -q -r "$GITHUB_WORKSPACE/dist/adim-theme.zip" adim -x '*/.DS_Store')
+          (cd wp-content/plugins && zip -q -r "$GITHUB_WORKSPACE/dist/adim-operations-plugin.zip" adim-operations -x '*/.DS_Store')
+          unzip -l dist/adim-theme.zip | grep -q 'adim/style.css'
+          unzip -l dist/adim-theme.zip | grep -q 'adim/index.php'
+          unzip -l dist/adim-operations-plugin.zip | grep -q 'adim-operations/adim-operations.php'
+          sha256sum dist/*.zip
+
+      - name: Upload installable theme ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: adim-wordpress-theme
+          path: dist/adim-theme.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload operations plugin ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: adim-operations-plugin
+          path: dist/adim-operations-plugin.zip
+          if-no-files-found: error
+          retention-days: 30
