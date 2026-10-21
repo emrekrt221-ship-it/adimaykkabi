@@ -55,7 +55,21 @@ try {
     await postcode.press('Tab');
   }
   const email = page.locator('#billing_email');
-  if (await email.count()) await email.fill('test@example.test');
+  assert(await email.count() > 0, 'WooCommerce guest email field is present');
+  await email.fill('not-an-email');
+  assert(await email.evaluate(el => !el.checkValidity()),
+    'invalid email fails native browser form validation without submitting');
+  await email.fill('test@example.test');
+  assert(await email.evaluate(el => el.checkValidity()),
+    'corrected fictional email passes native browser format validation');
+
+  const firstName = page.locator('#billing_first_name');
+  await firstName.fill('');
+  assert(await firstName.evaluate(el => !el.checkValidity()),
+    'missing required guest name fails browser field validation');
+  await firstName.fill('Test');
+  assert(await firstName.evaluate(el => el.checkValidity()),
+    'corrected fictional first name satisfies required field');
 
   await page.getByText('ADIM CI Fixed Delivery').first().waitFor({ state: 'visible' });
   const shippingMethod = page.locator('input.shipping_method').first();
