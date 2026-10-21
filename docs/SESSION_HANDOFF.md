@@ -35,3 +35,11 @@ Single-store footwear e-commerce: lightweight WordPress + WooCommerce, MySQL/HPO
 3. Run mixed Woo Store API online checkout vs physical POS last-stock tests, including new UUID client retry and hold expiry.
 4. Plan persistent staging, device browser tests, backup/restore, merchant/legal inventory checks.
 5. Update repo documents. New chat prompt: "GitHub'daki adimaykkabi projesine devam et. CURRENT_DEVELOPMENT.md ve PR #7 dalındaki docs/SESSION_HANDOFF.md dosyalarını oku; açık PR/CI'ı doğrula."
+
+## 2026-10-21 newest development — PR #8
+- Check [draft PR #8](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/8), branch `feat/pos-return-inspection`, base `test/pos-crash-recovery-audit`. Its base PR #7 depends on #6 -> #5 -> #1. All draft/unmerged.
+- New `includes/pos-returns.php`: cashier intake of WooCommerce physical POS return, idempotency UUID, per-order-item named MySQL lock, sold-quantity upper bound, starts as quarantined. Manager only can record accepted/rejected review, with persisted Woo order note; **does not refund or restock**.
+- `includes/pos-return-admin.php`: cashier and manager protected WordPress screens. `ADIM_ENABLE_RETURN_INTAKE` must explicitly be true to receive items; default OFF.
+- Test `tests/pos-returns.php` covers positive/negative roles, duplicate, quantity, no stock/payment changes and UI markup. See `docs/POS_RETURNS.md`.
+- Initial real WooCommerce test run 39561531178 was green before UI; verify latest PR HEAD CI and fix failures. Do not merge/deploy unfinished functionality.
+- Next: secure real-browser flows for POS and returns, payment/fiscal and audited refund/restock separately. Merchandise licensing/brand sourcing and launch prerequisites outstanding.
