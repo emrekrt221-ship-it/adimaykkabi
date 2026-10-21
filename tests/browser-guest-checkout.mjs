@@ -55,7 +55,28 @@ try {
     await postcode.press('Tab');
   }
   const email = page.locator('#billing_email');
-  if (await email.count()) await email.fill('test@example.test');
+  assert(await email.count() > 0, 'WooCommerce guest email field is present');
+  await email.fill('not-an-email');
+  assert(await email.evaluate(el => !el.checkValidity()),
+    'invalid email fails native browser form validation without submitting');
+  await email.fill('test@example.test');
+  assert(await email.evaluate(el => el.checkValidity()),
+    'corrected fictional email passes native browser format validation');
+
+  const firstName = page.locator('#billing_first_name');
+  const firstNameRow = page.locator('#billing_first_name_field');
+  assert(await firstNameRow.evaluate(el => el.classList.contains('validate-required')),
+    'WooCommerce marks first-name row for its own JavaScript required-field validation');
+  await firstName.fill('');
+  await firstName.press('Tab');
+  // WooCommerce uses its own .validate-required row and server-side
+  // WC_Checkout validation. Native HTML checkValidity() alone cannot prove
+  // a name was required, because Woo may omit the HTML required attribute.
+  assert(await firstName.inputValue() === '',
+    'blank first name is an explicit negative-case fixture');
+  await firstName.fill('Test');
+  assert(await firstName.inputValue() === 'Test',
+    'fictional name restored without ever submitting checkout');
 
   await page.getByText('ADIM CI Fixed Delivery').first().waitFor({ state: 'visible' });
   const shippingMethod = page.locator('input.shipping_method').first();

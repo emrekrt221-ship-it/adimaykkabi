@@ -40,3 +40,7 @@ Definition of Done for release: reviewed/merged change, passing meaningful real 
 
 - [x] Draft PR #12: disposable native WooCommerce guest cart with two synthetic items, actual configured domestic shipping price/total, Woo address requirements, Chromium 390px populated guest checkout, zero orders/payment methods; CI 39573459546 passed.
 - [ ] Extend guest checkout form error scenarios and shipping-zone boundaries, verified real shipping provider rates/receipts, approved merchant payment sandbox with no user payment until legal release requirements.
+
+- [x] PR #13 draft: add WooCommerce native guest address-validation regression and Chromium input tests, including malformed email/phone and missing name/street; never submit order. CI HEAD result pending verification.
+- [x] PR #13: test-only temporary checkout sales switch is cleaned via shell EXIT trap, even after browser failure.
+- [ ] Expand guest checkout Store API validation and shipping restrictions in private staging; actual gateway sandbox only after merchant approval.
