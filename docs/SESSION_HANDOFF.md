@@ -50,3 +50,9 @@ Copy/paste into new ChatGPT conversation: "GitHub'daki emrekrt221-ship-it/adimay
 - CSS improves mobile product cards, gallery/summary, variation/select, Woo sort and accessible controls. Tests: `tests/catalog-ux.php` plus Chromium `tests/browser-mobile.mjs` in updated Woo integration workflow. See `docs/CATALOG_UX.md`.
 - [Real Woo catalog CI 39564596521](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39564596521) PASS. Browser workflow install/run was pending at this snapshot; check current Actions and artifacts before making claims.
 - Next: fix any real browser UI failure; add real-product detail variation/filter/checkout flow tests with legally authorized synthetic products, then persist staging and performance audit. Keep switches OFF.
+
+## Final browser QA status of PR #10
+- [Run 39565540676](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39565540676) SUCCESS for PHP/WordPress/Woo integration, Chromium mobile+desktop widths, navigation and product-detail disclosure. Screenshots artifact ID 12329925612.
+- Root cause of earlier browser failures: disposable WP CLI installation wrote script URLs under unexpected `/adim-wordpress/`; the CI script sets `home` and `siteurl` to `http://127.0.0.1:8888`, and navigation initialization waits for DOM readiness. Do not change production URLs based on these test-specific corrections.
+- Browser CI uses Playwright 1.56.1 Chromium, checks 360/390/768/1280px, no horizontal page overflow and zero script errors; it is an automated smoke test, not full usability/SEO/performance certification.
+- Follow-up task: inspect captured screenshots, refine actual product photography and mobile category/checkout layout on staging; keep sales disabled.
