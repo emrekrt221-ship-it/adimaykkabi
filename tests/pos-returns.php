@@ -67,4 +67,21 @@ return_check(is_wp_error($repeat)&&$repeat->get_error_code()==='adim_return_not_
 
 $notes=wc_get_order_notes(['order_id'=>$order->get_id(),'limit'=>30]);
 return_check((bool)array_filter($notes,static fn($x)=>str_contains($x->content,'ADIM iade ürün kontrolü')),'review audit note stored');
+
+// UI smoke checks with real WordPress role and nonce rendering.
+wp_set_current_user((int) $cashierId);
+ob_start();
+adim_return_render_intake();
+$intakeHtml = ob_get_clean();
+return_check(str_contains($intakeHtml, 'Karantina Kaydı Oluştur')
+    && str_contains($intakeHtml, 'name="_wpnonce"'),
+    'cashier intake screen renders protected form');
+wp_set_current_user((int) $admin->ID);
+ob_start();
+adim_return_render_inspection();
+$reviewHtml = ob_get_clean();
+return_check(str_contains($reviewHtml, 'İade Ürün Kontrolü')
+    && str_contains($reviewHtml, 'Kontrol Sonucunu Kaydet'),
+    'manager inspection screen lists pending returns');
+
 echo 'ADIM WooCommerce return intake/inspection tests passed.' . PHP_EOL;
