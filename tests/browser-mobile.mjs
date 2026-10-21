@@ -80,6 +80,31 @@ try {
     'Product page has no horizontal overflow at 390px');
   await page.screenshot({ path: 'browser-screenshots/product-390.png', fullPage: true });
   console.log('PASS Browser: responsive product detail and fitting guidance');
+  // Native WooCommerce cart and checkout render real, disabled-sale states.
+  const cartHref = await page.locator('.adim-cart-link').getAttribute('href');
+  assert(cartHref, 'WooCommerce cart link present');
+  const cartPage = await page.goto(cartHref, { waitUntil: 'domcontentloaded' });
+  assert(cartPage?.status() === 200, 'native empty-cart page responds');
+  await page.locator('.adim-journey').waitFor({ state: 'visible' });
+  await page.locator('.adim-checkout-alert').waitFor({ state: 'visible' });
+  assert.equal(await page.locator('.adim-journey [aria-current="step"]').count(), 1);
+  await page.screenshot({ path: 'browser-screenshots/cart-390.png', fullPage: true });
+  console.log('PASS Browser: empty WooCommerce cart shows accessible checkout guide and disabled notice');
+
+  const checkoutUrl = process.env.ADIM_CI_CHECKOUT_URL;
+  assert(checkoutUrl, 'disposable WooCommerce checkout page URL provided');
+  const checkoutPage = await page.goto(checkoutUrl, { waitUntil: 'domcontentloaded' });
+  assert(checkoutPage?.status() === 200, 'checkout page responds without creating an order');
+  await page.locator('.adim-checkout-help').waitFor({ state: 'visible' });
+  await page.locator('.adim-checkout-alert').waitFor({ state: 'visible' });
+  const checkoutWidth = await page.evaluate(() => ({
+    document: document.documentElement.scrollWidth,
+    viewport: document.documentElement.clientWidth,
+  }));
+  assert(checkoutWidth.document <= checkoutWidth.viewport + 2,
+    'checkout page must not overflow 390px viewport');
+  await page.screenshot({ path: 'browser-screenshots/checkout-390.png', fullPage: true });
+  console.log('PASS Browser: empty native WooCommerce checkout explains delivery and payment restrictions');
   await page.close();
 } finally {
   await browser.close();
