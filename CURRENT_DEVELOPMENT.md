@@ -1,33 +1,32 @@
-# ADIM AYAKKABI — Current Development Pointer
-Updated: 2026-10-20. **Read this file FIRST in any new ChatGPT development conversation.**
+# ADIM AYAKKABI — Active development index
 
-## Actual code is in stacked draft PRs (NOT in main)
-1. [PR #1 — Storefront](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1): `feat/mobile-storefront-foundation` → `main`.
-2. [PR #5 — In-store POS and shared variation inventory](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/5): `feat/in-store-pos-reservations` → `feat/mobile-storefront-foundation`.
-3. [PR #6 — Cashier role + manager reconciliation](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/6): `feat/pos-reconciliation-and-cashier-role` → `feat/in-store-pos-reservations`.
+Updated: 2026-10-21. **Read this file first in a new development chat.**
 
-**All three are draft/unmerged as of this snapshot.** Inspect live GitHub status and current base branches before editing or merging. Do not restart coding on main or duplicate already completed work.
+## Stacked unmerged draft PRs (bottom → top)
+1. [#1 Storefront](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/1): `feat/mobile-storefront-foundation` → `main`.
+2. [#5 Shared physical/online stock POS](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/5): `feat/in-store-pos-reservations` → `feat/mobile-storefront-foundation`.
+3. [#6 Cashier roles and manager reconciliation](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/6): `feat/pos-reconciliation-and-cashier-role` → `feat/in-store-pos-reservations`.
+4. [#7 Six POS crash boundaries](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/7): `test/pos-crash-recovery-audit` → `feat/pos-reconciliation-and-cashier-role`.
+5. [#8 Return quarantine & inspection](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/8): `feat/pos-return-inspection` → `test/pos-crash-recovery-audit`.
 
-## Authoritative docs on deepest development branch
-- [AGENTS.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-reconciliation-and-cashier-role/AGENTS.md)
-- [docs/STATUS.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-reconciliation-and-cashier-role/docs/STATUS.md)
-- [docs/SESSION_HANDOFF.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-reconciliation-and-cashier-role/docs/SESSION_HANDOFF.md)
-- [docs/MASTER_PLAN_FULL.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-reconciliation-and-cashier-role/docs/MASTER_PLAN_FULL.md)
-- [docs/POS_RECONCILIATION.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-reconciliation-and-cashier-role/docs/POS_RECONCILIATION.md)
+**None are merged to main as of the last check.** Verify live GitHub before continuing.
 
-## Last confirmed test evidence
-- [Run 39391233300](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391233300) — SUCCESS real WordPress/WooCommerce/MySQL product, cashier, manager review, concurrency and HTTP tests.
-- [Run 39391233199](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39391233199) — SUCCESS PHP/JS syntax and isolated hook tests.
-- These were checked before the latest documentation-only edits; check latest PR head before QA merge. Tests are **not** a live staging or sales authorization.
+## The canonical documents live on the latest PR #8 branch
+- [AGENTS.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-return-inspection/AGENTS.md)
+- [docs/STATUS.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-return-inspection/docs/STATUS.md)
+- [docs/SESSION_HANDOFF.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-return-inspection/docs/SESSION_HANDOFF.md)
+- [docs/MASTER_PLAN_FULL.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-return-inspection/docs/MASTER_PLAN_FULL.md)
+- [docs/POS_CRASH_RECOVERY.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-return-inspection/docs/POS_CRASH_RECOVERY.md)
+- [docs/POS_RETURNS.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/feat/pos-return-inspection/docs/POS_RETURNS.md)
 
-- [Run 39392125050](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39392125050) — SUCCESS on latest PR #6 documentation head, complete real WooCommerce integration and POS concurrency regression.
-- [Run 39392125012](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39392125012) — SUCCESS PHP/JS/smoke code checks on same head.
+## Latest engineering
+PR #7 completed real WooCommerce/MySQL abrupt PHP exit tests at six stages; see branch docs and CI. PR #8 added a quarantined POS return intake ledger, UUID idempotency, order-item locks, manager-only inspection, cashier/manager WordPress screens and tests. Both `ADIM_ENABLE_POS` and `ADIM_ENABLE_SALES` remain **OFF**; `ADIM_ENABLE_RETURN_INTAKE` also defaults OFF. Review the current PR #8 CI head before considering merge.
 
-## Explicit unfinished / blocked
-- Crash injection/repair of interrupted POS writes, refunds/returns with restock inspection and complete fiscal/accounting support.
-- Browser/mobile/device and accessibility QA, persistent private staging with backup/restore, online+POS checkout contention.
-- Verified online payment gateway and shipping/invoice integrations, lawful inventory/brand rights, applicable ETBIS/KVKK/consumer compliance and merchant approval.
-- **Both `ADIM_ENABLE_POS` and `ADIM_ENABLE_SALES` are OFF by default.** This code is not production-ready. Counterfeit branded goods must NOT be listed or sold.
+## Open release blockers
+- Refunds, automated stock restores and tax receipts NOT implemented; return inspection never refunds or restocks.
+- Persistent private staging, real device UX, backups/restore, mixed checkout stock/online gateway testing.
+- Product sourcing/trademark legality, merchant/payment approval, applicable ETBIS/consumer/KVKK and tax requirements.
+- Only legally authorized goods can be sold. Do not list or sell counterfeit trademarked footwear.
 
-## Next-chat message
-> GitHub'daki `emrekrt221-ship-it/adimaykkabi` projesine devam et. Önce ana daldaki CURRENT_DEVELOPMENT.md dosyasını, sonra PR #6 dalındaki AGENTS.md, docs/STATUS.md, docs/SESSION_HANDOFF.md ve POS_RECONCILIATION.md dosyalarını oku. Açık PR #1/#5/#6 ve CI testlerini kontrol et, en yakın eksik geliştirmeyi yeni küçük bir PR ile yap, gerçek testleri çalıştır ve devir dosyalarını güncelle. Canlı satış veya yasal uygunluğu belirsiz ürünleri açma.
+## Resume prompt
+> GitHub'daki `emrekrt221-ship-it/adimaykkabi` projesine devam et. Main dalındaki CURRENT_DEVELOPMENT.md'yi oku, ardından PR #8 dalındaki docs/STATUS.md ve SESSION_HANDOFF.md dosyalarını ve açık PR #1, #5, #6, #7, #8 testlerini kontrol et. Sonraki eksik işi odaklı PR'la geliştir, test et ve devir belgelerini güncelle. Test edilmemiş/uygunsuz ürünlerin gerçek satışını açma.
