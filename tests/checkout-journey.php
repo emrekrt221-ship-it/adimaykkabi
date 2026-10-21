@@ -11,6 +11,13 @@ function adim_checkout_check(bool $condition, string $message): void
 }
 adim_checkout_check(!adim_ops_sales_enabled(), 'live sales switch defaults disabled');
 
+// The classic WooCommerce cart does not invite checkout while sales are OFF.
+// Store API/Blocks checkout remains protected by the early server-side guard.
+add_action('woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout', 20);
+adim_checkout_hide_proceed_when_closed();
+adim_checkout_check(has_action('woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout') === false,
+    'classic Woo cart hides proceed-to-checkout button when online sales disabled');
+
 $before = wc_get_orders(['limit' => -1, 'return' => 'ids']);
 $denial = adim_ops_checkout_rejection();
 adim_checkout_check(is_wp_error($denial)
