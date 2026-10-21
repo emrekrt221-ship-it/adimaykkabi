@@ -15,7 +15,7 @@ Verify that native WooCommerce can calculate a guest basket containing two neutr
 
 ## Automated test boundary
 1. `tests/guest-shipping-fixture.php` initializes test product, domestic shipping zone/rate and denies execution without `ADIM_CI_FIXTURE=yes` + WP CLI.
-2. `tests/guest-shipping.php` runs a native Woo guest cart with quantity two, computes subtotal/selected shipping/total and checks that a non-domestic destination has **no** configured delivery option.
+2. `tests/guest-shipping.php` runs a native Woo guest cart with quantity two, computes subtotal/selected shipping/total and verifies WooCommerce exposes **only Türkiye** in the allowed shipping-country selector. Unsupported direct-package tests are not used because they bypass the configured location policy.
 3. `tests/browser-guest-checkout.mjs` uses Chromium mobile 390px to visit the synthetic product add-to-cart URL, real cart and checkout, fill fictional customer name/address and assert native flat-rate option without clicking Place Order.
 4. `tests/guest-no-orders.php` asserts **zero WooCommerce orders and zero enabled payment gateways** after the browser preview.
 5. All other established storefront, catalog, closed-sales checkout guard and browser smoke tests still run.
