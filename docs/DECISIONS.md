@@ -22,3 +22,5 @@ ADR-018 (2026-10-21): POS hard-stop tests are **WP-CLI only** and require explic
 ADR-019 (2026-10-21): Orphan order discovery is manager-only and read-only. No automatic linking or cancellation. Persist the WooCommerce investigation note before marking the POS ledger reviewed; note write failure leaves the ledger unresolved. Still no stock/refund mutations in review.
 
 ADR-018 (2026-10-21): POS returns use an independent Woo-linked intake ledger, MySQL per-order-item lock, UUID replay and max sold-quantity enforcement; new return begins in quarantine. Cashier has intake only, manager records inspection only. Neither step refunds, changes order status or adds salable stock. Separate server-only return-intake flag defaults disabled.
+
+ADR-019 (2026-10-21): Returned stock can re-enter salable WooCommerce inventory only after manual accepted physical inspection and a *separate* manager action. Default OFF `ADIM_ENABLE_RETURN_RESTOCK`, unique per-return claim and unknown-outcome fail-closed. No automatic refund or fiscal adjustment; do not auto-retry or compensate uncertain increments. This is draft PR #9 pending QA.
