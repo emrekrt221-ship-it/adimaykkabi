@@ -19,6 +19,11 @@ update_option('woocommerce_ship_to_countries', 'specific');
 update_option('woocommerce_specific_ship_to_countries', ['TR']);
 update_option('woocommerce_calc_taxes', 'no');
 update_option('woocommerce_enable_guest_checkout', 'yes');
+// Explicitly disable *all* bundled offline methods in the disposable CI
+// environment; this test does not attempt to place or pay for an order.
+foreach (['bacs', 'cheque', 'cod', 'paypal'] as $gateway) {
+    update_option('woocommerce_' . $gateway . '_settings', ['enabled' => 'no']);
+}
 update_option('woocommerce_enable_shipping_calc', 'yes');
 update_option('woocommerce_ship_to_destination', 'billing_only');
 
