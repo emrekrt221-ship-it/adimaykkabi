@@ -54,5 +54,7 @@ jobs:
       - name: Execute actual WooCommerce tests
         run: |
           php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/integration-wordpress.php" --path=/tmp/adim-wordpress --allow-root
+      - name: Test WooCommerce size filter and fitting UX
+        run: php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/catalog-ux.php" --path=/tmp/adim-wordpress --allow-root
       - name: Test storefront and product URLs over HTTP
         run: bash tests/storefront-http.sh
