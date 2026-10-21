@@ -29,3 +29,6 @@ Launch definition: approved legal inventory and financial/legal terms, productio
 
 - [x] PR #8 (draft): implement return receipt + quarantine, cashier/manager role-separated screens, same-key idempotency, manager inspection with no automatic refund/restock (real WooCommerce API tests; latest UI CI to verify).
 - [ ] Reviewed financial refund flow with compliance/tax handling, physical item condition-based one-time inventory restock, and end-to-end UI/interrupt/recovery tests.
+
+- [x] PR #9 draft: explicit manager-confirmed post-inspection one-time return restock with unique movement claim and Woo native stock API; real Woo integration test passed.
+- [ ] PR #9 production readiness: concurrent restock/online sale/financial refund race, interruption points, rollback and reconciliation, staging and real device UX, legally compliant authorization.
