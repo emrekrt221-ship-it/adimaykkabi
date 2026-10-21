@@ -60,6 +60,8 @@ $wpdb->update($table, ['status' => 'needs_review'], ['request_key' => $key], ['%
 $wrong = adim_pos_acknowledge_review($key, 'Evraklar ve stok sayimi kontrol edildi', (int) $cashierId);
 adim_review_assert(is_wp_error($wrong) && $wrong->get_error_code() === 'adim_pos_review_forbidden',
     'cashier cannot acknowledge an uncertain ledger entry');
+adim_review_assert(adim_pos_possible_orphan_orders($key) === [],
+    'cashier cannot use privileged orphan order lookup');
 $screenDenied = !adim_pos_can_reconcile();
 adim_review_assert($screenDenied, 'review screen manager guard stays denied for cashier');
 
