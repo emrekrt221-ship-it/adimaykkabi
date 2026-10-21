@@ -65,6 +65,18 @@ $reviewRows = adim_pos_pending_reviews();
 crash_assert((bool) array_filter($reviewRows, static fn($row) => $row->request_key === $key),
     $stage . ': stale interrupted request appears in review queue');
 
+if ($expected_unlinked) {
+    $possible = adim_pos_possible_orphan_orders($key);
+    crash_assert(count($possible) === ($expected_no_order ? 0 : 1),
+        $stage . ': read-only orphan search detects exactly the persisted Woo order');
+    if (!$expected_no_order) {
+        crash_assert($possible[0]->get_id() === $orders[0]->get_id(),
+            $stage . ': diagnostic candidate matches the correct request key');
+    }
+    crash_assert((int) wc_get_product($stockId)->get_stock_quantity() === $stockBeforeReview,
+        $stage . ': orphan diagnostic has no stock effect');
+}
+
 $reason = 'Kasa fişi, tahsilat ve stok sayımı ayrı ayrı kontrol edildi';
 $review = adim_pos_acknowledge_review($key, $reason, get_current_user_id());
 if ($expected_unlinked) {
