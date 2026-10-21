@@ -33,7 +33,7 @@ WC()->customer->set_billing_postcode('31500');
 WC()->customer->set_shipping_country('TR');
 WC()->customer->set_shipping_city('Reyhanlı');
 WC()->customer->set_shipping_postcode('31500');
-WC()->customer->set_shipping_address('Test Sokak No: 1');
+WC()->customer->set_shipping_address_1('Test Sokak No: 1');
 WC()->cart = new WC_Cart();
 $key = WC()->cart->add_to_cart($product_id, 2);
 adim_guest_assert((bool) $key, 'guest cart accepts two legally neutral test pairs');
