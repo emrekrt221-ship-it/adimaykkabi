@@ -42,7 +42,7 @@ add_action('woocommerce_product_query', static function ($query): void {
 }, 20);
 
 /** Accessible, no-JavaScript size toolbar for WooCommerce archives. */
-add_action('woocommerce_before_shop_loop', static function (): void {
+function adim_catalog_render_filter(): void {
     if (!taxonomy_exists('pa_beden')) {
         return; // WooCommerce size attribute has not been created yet.
     }
@@ -88,14 +88,16 @@ add_action('woocommerce_before_shop_loop', static function (): void {
             . '">' . esc_html__('Temizle', 'adim') . '</a>';
     }
     echo '</form></div>';
-}, 15);
+}
+add_action('woocommerce_before_shop_loop', 'adim_catalog_render_filter', 15);
 
 /** Accessible, neutral fitting guidance — avoid making unsupported size promises. */
-add_action('woocommerce_single_product_summary', static function (): void {
+function adim_catalog_render_size_help(): void {
     echo '<details class="adim-size-help">';
     echo '<summary>' . esc_html__('Numaramı nasıl seçmeliyim?', 'adim') . '</summary>';
     echo '<p>' . esc_html__('Ayak uzunluğunu topuktan en uzun parmağa kadar ölçün. '
         . 'Her modelin kalıbı farklı olabilir; ürün açıklamasındaki ölçü ve numara bilgilerini kontrol edin.', 'adim') . '</p>';
     echo '<p>' . esc_html__('Numara, stok veya kalıpla ilgili sorularınız için mağazayla iletişime geçebilirsiniz.', 'adim') . '</p>';
     echo '</details>';
-}, 35);
+}
+add_action('woocommerce_single_product_summary', 'adim_catalog_render_size_help', 35);
