@@ -97,9 +97,15 @@ jobs:
           # Only temporary /tmp/adim-wordpress/wp-config.php is modified here,
           # never tracked PHP, production configuration or deployment secrets.
           php /tmp/wp-cli.phar config set ADIM_ENABLE_SALES true --raw --path=/tmp/adim-wordpress --allow-root
+          # Always delete the temporary sale flag, including browser test failures.
+          server_pid=""
+          cleanup_guest_test() {
+            if [[ -n "$server_pid" ]]; then kill "$server_pid" 2>/dev/null || true; fi
+            php /tmp/wp-cli.phar config delete ADIM_ENABLE_SALES --path=/tmp/adim-wordpress --allow-root > /dev/null 2>&1 || true
+          }
+          trap cleanup_guest_test EXIT
           php -S 127.0.0.1:8888 -t /tmp/adim-wordpress /tmp/adim-router.php > /tmp/adim-guest-browser-server.log 2>&1 &
           server_pid=$!
-          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in {1..25}; do
             if curl -sf http://127.0.0.1:8888/ > /dev/null; then break; fi
             sleep 1
@@ -108,8 +114,7 @@ jobs:
           checkout_id=$(php /tmp/wp-cli.phar option get woocommerce_checkout_page_id --path=/tmp/adim-wordpress --allow-root)
           ADIM_CI_PRODUCT_ID="$product_id" ADIM_CI_CHECKOUT_URL="http://127.0.0.1:8888/?page_id=${checkout_id}" node tests/browser-guest-checkout.mjs
           php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/guest-no-orders.php" --path=/tmp/adim-wordpress --allow-root
-          # Restore fail-closed state even in the disposable CI instance.
-          php /tmp/wp-cli.phar config delete ADIM_ENABLE_SALES --path=/tmp/adim-wordpress --allow-root
+          # Cleanup on shell EXIT also runs when the test fails.
       - name: Upload browser viewport screenshots
         if: always()
         uses: actions/upload-artifact@v4
