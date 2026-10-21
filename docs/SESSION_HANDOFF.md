@@ -56,3 +56,29 @@ Copy/paste into new ChatGPT conversation: "GitHub'daki emrekrt221-ship-it/adimay
 - Root cause of earlier browser failures: disposable WP CLI installation wrote script URLs under unexpected `/adim-wordpress/`; the CI script sets `home` and `siteurl` to `http://127.0.0.1:8888`, and navigation initialization waits for DOM readiness. Do not change production URLs based on these test-specific corrections.
 - Browser CI uses Playwright 1.56.1 Chromium, checks 360/390/768/1280px, no horizontal page overflow and zero script errors; it is an automated smoke test, not full usability/SEO/performance certification.
 - Follow-up task: inspect captured screenshots, refine actual product photography and mobile category/checkout layout on staging; keep sales disabled.
+
+## 2026-10-21 newest UI development — PR #11
+- [Draft PR #11](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/11), branch `feat/checkout-journey-and-guards`, base `feat/mobile-catalog-shopping-ux`. Depends PR #10 -> PR #1; independent from deep physical POS/returns PR #5–#9. All these remain draft/unmerged at last check.
+- Native Woo cart/checkout render 3-step accessible guide in `page.php` even when cart empty or using Woo Blocks, honest purchase-disabled notice and accurate shipping/pickup information based only on Woo configured methods.
+- Theme: `inc/checkout.php`, `page.php`, `functions.php`, `assets/css/storefront.css`.
+- Plugin: `includes/checkout-guard.php`, plugin bootstrap. Fail-closed classic checkout and Store API POST checkout when `ADIM_ENABLE_SALES` OFF. Revoke approval in existing cart => blocked Store API.
+- Tests: `tests/checkout-journey.php`, `tests/checkout-pages-setup.php` (disposable CI only), updated Chromium `tests/browser-mobile.mjs` cart and checkout 390px, workflow.
+- [Run 39567936039](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39567936039): real WooCommerce guard stage PASSED; inspect final browser result and new HEAD CI before concluding.
+- Documentation `docs/CHECKOUT_JOURNEY.md`. Next: actual approved merchant gateway sandbox, Woo shipping/real pickup settings, guest checkout end-to-end with controlled stock and legal data. No payment credentials, deployments or sales switch changes.
+
+## Last checked PR #11 browser CI / next turn (2026-10-21)
+
+## Checkout browser regression resolved — 2026-10-21
+- Earlier [run 39567936039](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39567936039) failed **only** at the browser step: it assumed an empty WooCommerce checkout page always displays checkout copy.
+- In this WooCommerce setup, opening checkout with an empty cart may redirect to the cart; the user should see the truthful sales-disabled notice there. The Playwright test now accepts either WooCommerce-supported state: checkout explanation shown, OR a same-store empty-checkout redirect back to cart with its notice.
+- [Run 39568663982](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663982) **SUCCESS**: PHP/WooCommerce/MySQL test suite, Store API POST 403 + revoked cart 409 + unchanged order count, actual HTTP, Chromium homepage/mobile navigation/product/cart/empty-checkout redirection and screenshots.
+- [Static checks 39568663927](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663927) **SUCCESS**. These runs are on code commit `ecf8a1f7`; docs-only commits will trigger newer runs before merge.
+- This tests CLOSED-SALES checkout, **not** a complete payable guest order, shipping, live payments or verified legal inventory. All production sales remain disabled.
+
+Next: inspect latest draft PR #11 state and CI; then implement a disposable **synthetic** guest checkout/shipping address smoke (no card gateway, no real transactions), plus Woo REST cart add-item rejection tests. Keep WordPress/Woo built-in checkout; separate offline-test fixture only if needed. Document existing acceptance limits, never turn on production `ADIM_ENABLE_SALES`.
+
+## 2026-10-21 final PR #11 checkpoint
+- Checkout screen browser CI initially failed assuming an empty checkout always renders. WooCommerce sometimes redirects empty checkout to cart; test now checks both native states and visible closed-sales notice.
+- Additional `inc/checkout.php` `adim_checkout_hide_proceed_when_closed` removes standard classic Woo cart proceed button when the default-off global sales switch is OFF; operations plugin server-side guard remains essential for Woo Blocks/REST.
+- Test `tests/checkout-journey.php` verifies native hook removal; `tests/browser-mobile.mjs` verifies cart/empty-checkout redirect. [Run 39569174873](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39569174873) SUCCESS for all integration/Chromium tests, [39569174869](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39569174869) SUCCESS code checks (before any later docs commits).
+- All PRs remain draft; no real payments or delivery configured. Next: legally neutral synthetic cart-with-products + guest address/shipping test in **isolated** staging without card charge; block CART API variants/revoked products; production requires merchant/legal and gateway approvals, HTTPS hosting, backup/restore.

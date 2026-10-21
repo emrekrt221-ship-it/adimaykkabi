@@ -54,3 +54,24 @@ Production: NOT DEPLOYED. No real payments, shipments, or approved products onli
 - Browser captures artifact: `adim-browser-viewport-captures`, artifact ID 12329925612 (homepage four widths + product 390px).
 - Previous browser failures revealed test WordPress asset URLs were incorrectly configured with `/adim-wordpress/` prefix. Fixed the CI test environment by explicitly setting `home` and `siteurl` to the PHP server root, and made nav JS DOM-ready safe. Latest validated run green.
 - Automated Chromium is **not** final visual review by the store owner, true mobile network performance or accessibility auditing with assistive devices.
+
+## PR #11 — customer cart → checkout guidance and fail-closed order guard (2026-10-21)
+- Draft [PR #11](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/11): `feat/checkout-journey-and-guards` -> `feat/mobile-catalog-shopping-ux` (depends on draft PR #10 -> PR #1; separate from physical POS #5–#9).
+- ADIM theme `inc/checkout.php` and `page.php`: 3-step customer journey on Woo native cart/checkout pages even when cart empty, honest sales-off notice, delivery method/payment explanation without inventing price/provider/pickup, native Woo totals remain authoritative.
+- ADIM operations plugin `includes/checkout-guard.php`: Store API `POST /wc/store/vN/checkout` rejected before order creation when `ADIM_ENABLE_SALES` is disabled; classic checkout validation also rejects. Cart products with revoked manual sale approval are blocked, including REST POST checkout with HTTP 409.
+- Real WordPress/WooCommerce/MySQL test `tests/checkout-journey.php` confirms default-off 403, authorized synthetic sample only, revoked product 409, and no additional Woo order. Checkout pages fixture is WP-CLI-only; no real gateway.
+- Browser test extension `tests/browser-mobile.mjs` checks 390px cart & checkout, unavailable-payment messaging, responsiveness and screenshots.
+- Early [run 39567936039](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39567936039): WooCommerce API/order-guard tests passed; check full browser outcome and last PR HEAD before claiming complete QA.
+- Payment processor sandbox, actual shipping-zone rates, lawful supply chain, legal/financial approvals, true browser checkout with a configured provider and persistent staging remain missing. Sales flags stay OFF.
+
+## Checkout browser regression resolved — 2026-10-21
+- Earlier [run 39567936039](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39567936039) failed **only** at the browser step: it assumed an empty WooCommerce checkout page always displays checkout copy.
+- In this WooCommerce setup, opening checkout with an empty cart may redirect to the cart; the user should see the truthful sales-disabled notice there. The Playwright test now accepts either WooCommerce-supported state: checkout explanation shown, OR a same-store empty-checkout redirect back to cart with its notice.
+- [Run 39568663982](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663982) **SUCCESS**: PHP/WooCommerce/MySQL test suite, Store API POST 403 + revoked cart 409 + unchanged order count, actual HTTP, Chromium homepage/mobile navigation/product/cart/empty-checkout redirection and screenshots.
+- [Static checks 39568663927](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663927) **SUCCESS**. These runs are on code commit `ecf8a1f7`; docs-only commits will trigger newer runs before merge.
+- This tests CLOSED-SALES checkout, **not** a complete payable guest order, shipping, live payments or verified legal inventory. All production sales remain disabled.
+
+## Closed cart CTA improvement — 2026-10-21
+- Native classic Woo cart's `woocommerce_button_proceed_to_checkout` action is removed when online sales are disabled; the cart's honest closed-sales notice remains. Block-cart UI uses different controls and remains covered by the server-side Store API checkout guard; block-specific visual QA is still required.
+- [CI 39569174873](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39569174873) **SUCCESS**: PHP + real WordPress/WooCommerce/MySQL, new classic-cart checkout-button guard, Store API 403/409 validation, real Chromium mobile/home/product/cart/checkout, screenshot artifacts. Code checks for commit `ed31651c` [39569174869](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39569174869) **SUCCESS**.
+- `docs/CHECKOUT_JOURNEY.md` explains the empty-checkout redirect and absence of payments. Docs-only PR head may trigger newer CI; inspect latest before merge.

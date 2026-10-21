@@ -62,6 +62,10 @@ jobs:
           php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/integration-wordpress.php" --path=/tmp/adim-wordpress --allow-root
       - name: Test WooCommerce size filter and fitting UX
         run: php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/catalog-ux.php" --path=/tmp/adim-wordpress --allow-root
+      - name: Provision disposable WooCommerce cart/checkout pages
+        run: php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/checkout-pages-setup.php" --path=/tmp/adim-wordpress --allow-root
+      - name: Test closed checkout and Store API order creation guards
+        run: php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/checkout-journey.php" --path=/tmp/adim-wordpress --allow-root
       - name: Test storefront and product URLs over HTTP
         run: bash tests/storefront-http.sh
       - name: Install Chromium for real responsive browser tests
@@ -78,7 +82,8 @@ jobs:
             if curl -sf http://127.0.0.1:8888/ > /dev/null; then break; fi
             sleep 1
           done
-          node tests/browser-mobile.mjs
+          checkout_id=$(php /tmp/wp-cli.phar option get woocommerce_checkout_page_id --path=/tmp/adim-wordpress --allow-root)
+          ADIM_CI_CHECKOUT_URL="http://127.0.0.1:8888/?page_id=${checkout_id}" node tests/browser-mobile.mjs
       - name: Upload browser viewport screenshots
         if: always()
         uses: actions/upload-artifact@v4

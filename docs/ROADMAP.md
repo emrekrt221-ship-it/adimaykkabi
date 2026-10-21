@@ -30,3 +30,10 @@ Definition of Done for release: reviewed/merged change, passing meaningful real 
 
 - [x] PR #10 real Chromium viewport tests (360, 390, 768, 1280px) and product-detail mobile smoke; 39565540676 passed, screenshot artifact retained.
 - [ ] Operator visual signoff, accessibility keyboard/screen-reader audit, Lighthouse/Core Web Vitals on persistent private staging and genuine checkout.
+
+- [x] PR #11 draft: native cart/checkout progress guide with accurate shipping/payment copy, fail-closed Woo classic checkout and Store API POST checkout, revoked-cart product validation and initial real integration tests.
+- [ ] PR #11 Chromium mobile cart/checkout and real guest checkout with configured sandbox/payment and shipping zone; check current CI and screenshot artifacts.
+- [ ] Legal product/seller/provider verification and live payment/fulfillment integration; no merchant secrets in repo.
+
+- [x] PR #11: closed-sales classic Woo cart proceed button hidden; full WooCommerce/MySQL + Chromium cart/empty-checkout redirect validated in GitHub Actions 39569174873.
+- [ ] Block cart checkout UI review, filled-cart guest checkout with real configured shipping zone (synthetic products, no real payment), REST Store API cart endpoints and payment sandbox after merchant approval.

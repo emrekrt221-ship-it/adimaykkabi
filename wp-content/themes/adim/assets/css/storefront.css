@@ -116,3 +116,33 @@ body{min-width:320px}
   .woocommerce div.product .woocommerce-product-gallery{width:100%;float:none}
   .woocommerce div.product .product_title{font-size:1.65rem}
 }
+
+/* ADIM mobile cart → delivery → payment flow (native WooCommerce checkout). */
+.adim-journey{margin:0 0 1.5rem}
+.adim-journey-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.adim-journey-list>li{margin:0;min-width:0}
+.adim-journey-list a,.adim-journey-list li>span{min-height:62px;display:flex;gap:9px;align-items:center;padding:10px 12px;background:#fff;border:1px solid #e4e2df;border-radius:7px;text-decoration:none;font-size:.87rem;font-weight:650}
+.adim-journey-list li.is-current>span{background:#151515;border-color:#151515;color:white}
+.adim-journey-number{display:inline-grid;place-items:center;flex:0 0 27px;height:27px;border-radius:50%;background:#efece8;color:#151515;font-weight:800}
+.adim-journey-list li.is-current .adim-journey-number{background:#f57c00}
+.adim-checkout-alert{padding:14px 16px;border-radius:7px;border-left:4px solid #e87500;background:#fff8ed;margin:1rem 0 1.5rem}
+.adim-checkout-help{background:#fff;border:1px solid #e4e2df;border-radius:8px;padding:16px 20px;margin:0 0 1.5rem}
+.adim-checkout-help h2{font-size:1.1rem;margin:0 0 .5rem}
+.adim-checkout-help p{margin:0;color:#464646}
+.adim-order-disclaimer{padding:12px 14px;background:#f5f4f0;border-radius:6px;line-height:1.45}
+.woocommerce-cart .woocommerce,.woocommerce-checkout .woocommerce{max-width:1100px;margin:auto}
+.woocommerce-cart table.shop_table,.woocommerce-checkout table.shop_table{border-radius:8px;background:#fff}
+.woocommerce-cart .cart-collaterals .cart_totals,.woocommerce-checkout #order_review{border-radius:8px}
+.woocommerce-cart .wc-proceed-to-checkout .checkout-button,.woocommerce-checkout #place_order{min-height:48px;border-radius:6px;background:#151515;color:#fff;font-weight:750}
+.woocommerce-cart .wc-proceed-to-checkout .checkout-button:hover,.woocommerce-checkout #place_order:hover{background:#f57c00;color:#151515}
+.woocommerce .woocommerce-checkout input.input-text,.woocommerce .woocommerce-checkout select{min-height:44px;border:1px solid #aaa;border-radius:5px;padding:9px 11px}
+.woocommerce form .form-row label{font-weight:650}
+.woocommerce-checkout .woocommerce-checkout-review-order{background:#fff;border-radius:8px;padding:16px}
+@media(max-width:680px){
+  .adim-journey-list{gap:5px}
+  .adim-journey-list a,.adim-journey-list li>span{min-height:72px;flex-direction:column;align-items:flex-start;font-size:.74rem;padding:8px}
+  .adim-journey-number{flex:none;width:26px;height:26px}
+  .adim-checkout-help{padding:14px}
+  .woocommerce-cart .woocommerce table.shop_table_responsive tr td{padding:12px 8px}
+  .woocommerce .woocommerce-checkout-review-order{padding:12px}
+}
