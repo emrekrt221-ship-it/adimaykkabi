@@ -94,17 +94,35 @@ try {
   const checkoutUrl = process.env.ADIM_CI_CHECKOUT_URL;
   assert(checkoutUrl, 'disposable WooCommerce checkout page URL provided');
   const checkoutPage = await page.goto(checkoutUrl, { waitUntil: 'domcontentloaded' });
-  assert(checkoutPage?.status() === 200, 'checkout page responds without creating an order');
-  await page.locator('.adim-checkout-help').waitFor({ state: 'visible' });
-  await page.locator('.adim-checkout-alert').waitFor({ state: 'visible' });
+  assert(checkoutPage?.status() === 200, 'empty checkout resolves without creating an order');
+  const finalCheckoutUrl = new URL(page.url());
+  const requestedCheckoutUrl = new URL(checkoutUrl);
+  const atCheckout = finalCheckoutUrl.pathname === requestedCheckoutUrl.pathname
+    && finalCheckoutUrl.searchParams.get('page_id') === requestedCheckoutUrl.searchParams.get('page_id');
+  if (atCheckout) {
+    // In configurations that keep empty checkout visible, explanatory guidance
+    // and sales-off notice must be present.
+    await page.locator('.adim-checkout-help').waitFor({ state: 'visible' });
+    await page.locator('.adim-checkout-alert').waitFor({ state: 'visible' });
+    console.log('PASS Browser: native empty checkout renders customer delivery guidance');
+  } else {
+    // Current WooCommerce commonly redirects empty checkout to the cart;
+    // do not force a checkout page or fabricate a payment option.
+    assert.equal(finalCheckoutUrl.origin, new URL(cartHref).origin,
+      'empty checkout stays on same store');
+    assert.equal(finalCheckoutUrl.pathname, new URL(cartHref).pathname,
+      'native empty checkout returns customer to cart');
+    await page.locator('.adim-journey').waitFor({ state: 'visible' });
+    await page.locator('.adim-checkout-alert').waitFor({ state: 'visible' });
+    console.log('PASS Browser: native empty checkout redirects to cart with truthful sales-off notice');
+  }
   const checkoutWidth = await page.evaluate(() => ({
     document: document.documentElement.scrollWidth,
     viewport: document.documentElement.clientWidth,
   }));
   assert(checkoutWidth.document <= checkoutWidth.viewport + 2,
-    'checkout page must not overflow 390px viewport');
-  await page.screenshot({ path: 'browser-screenshots/checkout-390.png', fullPage: true });
-  console.log('PASS Browser: empty native WooCommerce checkout explains delivery and payment restrictions');
+    'empty-checkout destination has no horizontal overflow at 390px');
+  await page.screenshot({ path: 'browser-screenshots/checkout-empty-390.png', fullPage: true });
   await page.close();
 } finally {
   await browser.close();
