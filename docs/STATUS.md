@@ -36,3 +36,12 @@ Repository: https://github.com/emrekrt221-ship-it/adimaykkabi
 2. Develop controlled POS returns/refunds with manager authorization and manual inspection-before-restock, OR extend testing to mixed online Store API + POS stock contention.
 3. Set up persistent private staging and browser testing, user-approved lawful sample inventory only.
 4. Update STATUS and SESSION_HANDOFF with real evidence in each chat.
+
+## PR #8 — return intake and quarantine (2026-10-21)
+- Draft [PR #8](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/8): `feat/pos-return-inspection` -> `test/pos-crash-recovery-audit`, stacked after #7/#6/#5/#1; NOT merged.
+- `includes/pos-returns.php`: physical POS item return intake, separate `adim_return_inspections` ledger, UUID idempotency, per-order-item MySQL named lock, prevent accumulated returns beyond sold quantity, mandatory quarantine state, manager-only inspection acceptance/rejection.
+- `includes/pos-return-admin.php`: cashier form to record physical return and manager-only inspection queue with note, nonce and capability checks.
+- **No refund, payment reversal, order cancellation or stock increase** in this code. Return intake defaults disabled via `ADIM_ENABLE_RETURN_INTAKE`.
+- `tests/pos-returns.php` wired into temporary real WordPress/WooCommerce/MySQL GitHub Actions with role, replay, quantity, inspection, stock and UI controls.
+- Test evidence: initial [run 39561531178](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39561531178) passed core return API (before admin screen was added). Latest UI run must be checked before PR review.
+- Remaining: customer proof-of-purchase identity, fiscal refund integration and inspected stock-restoration workflow, full browser/device, backups, concurrent returns stress, and legal/product rights approvals.
