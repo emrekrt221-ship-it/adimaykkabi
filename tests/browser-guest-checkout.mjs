@@ -46,7 +46,7 @@ try {
   await page.locator('#billing_address_1').fill('Deneme Sokak 1');
   await page.locator('#billing_city').fill('Reyhanlı');
   const country = page.locator('#billing_country');
-  if (await country.count()) {
+  if (await country.count() && await country.evaluate(el => el.tagName === 'SELECT')) {
     await country.selectOption('TR');
   }
   const postcode = page.locator('#billing_postcode');
