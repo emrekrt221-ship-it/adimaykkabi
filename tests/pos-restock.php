@@ -73,6 +73,13 @@ restock_assert((int) wc_get_product($product->get_id())->get_stock_quantity() ==
 $originalTotal = $order->get_total();
 
 define('ADIM_ENABLE_RETURN_RESTOCK', true);
+ob_start();
+adim_restock_render_screen();
+$beforeHtml = ob_get_clean();
+restock_assert(str_contains($beforeHtml, 'İncelenmiş Ürün Stoğa Geri Alma')
+    && str_contains($beforeHtml, 'Tek Seferlik Stoğa Ekle')
+    && str_contains($beforeHtml, 'name="_wpnonce"'),
+    'manager UI exposes explicit confirmation and protected form');
 $cashierAttempt = adim_return_restock($key, 'Cashier attempts to increase stock without permission', (int) $cashierId);
 restock_assert(is_wp_error($cashierAttempt) && $cashierAttempt->get_error_code() === 'adim_restock_forbidden',
     'cashier cannot trigger stock adjustment');
@@ -89,6 +96,11 @@ restock_assert($stockMovement->status === 'completed', 'manager stock movement p
 restock_assert((int) $stockMovement->quantity === 2, 'return quantity retained in ledger');
 restock_assert((int) wc_get_product($product->get_id())->get_stock_quantity() === 5,
     'verified return adds two units using WooCommerce inventory API');
+ob_start();
+adim_restock_render_screen();
+$afterHtml = ob_get_clean();
+restock_assert(str_contains($afterHtml, 'daha önce stok hareketi kaydedildi'),
+    'completed return is shown as already-restocked rather than new action');
 
 $replay = adim_return_restock($key, $note, $adminId);
 restock_assert(!is_wp_error($replay) && $replay->status === 'completed',
