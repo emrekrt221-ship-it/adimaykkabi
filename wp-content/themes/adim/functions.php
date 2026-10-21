@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) {
 }
 
 require_once __DIR__ . '/inc/catalog.php';
+require_once __DIR__ . '/inc/checkout.php';
 
 add_action('after_setup_theme', static function (): void {
     load_theme_textdomain('adim', get_template_directory() . '/languages');
