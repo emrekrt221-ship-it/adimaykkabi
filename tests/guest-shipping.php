@@ -37,6 +37,7 @@ WC()->customer->set_shipping_address('Test Sokak No: 1');
 WC()->cart = new WC_Cart();
 $key = WC()->cart->add_to_cart($product_id, 2);
 adim_guest_assert((bool) $key, 'guest cart accepts two legally neutral test pairs');
+WC()->cart->calculate_totals();
 adim_guest_assert(WC()->customer->get_id() === 0, 'customer remains a guest');
 adim_guest_assert(WC()->cart->needs_shipping(), 'physical shoes require shipping');
 adim_guest_assert((float) WC()->cart->get_subtotal() === 3000.0
