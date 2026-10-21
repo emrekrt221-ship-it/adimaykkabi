@@ -24,3 +24,9 @@ Updated 2026-10-20. `[x]` means code and relevant tests exist; features may stil
 - [ ] ADIM-14: Optional barcode, Redis and shipping API after measured need.
 
 Definition of Done for release: reviewed/merged change, passing meaningful real integration tests, and required business/legal/operator approvals. Green lint alone is not sufficient.
+
+- [x] Draft PR #10: mobile product-card and product-detail CSS, WooCommerce Beden filter and native product variation UX; test with legally neutral WooCommerce fixtures.
+- [ ] Draft PR #10: real Chromium mobile 360/390/768/1280 browser screenshot audit and any findings; staging and actual assisted-device verification.
+
+- [x] PR #10 real Chromium viewport tests (360, 390, 768, 1280px) and product-detail mobile smoke; 39565540676 passed, screenshot artifact retained.
+- [ ] Operator visual signoff, accessibility keyboard/screen-reader audit, Lighthouse/Core Web Vitals on persistent private staging and genuine checkout.

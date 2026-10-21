@@ -8,6 +8,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+require_once __DIR__ . '/inc/catalog.php';
+
 add_action('after_setup_theme', static function (): void {
     load_theme_textdomain('adim', get_template_directory() . '/languages');
     add_theme_support('title-tag');
