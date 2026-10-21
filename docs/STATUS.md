@@ -54,3 +54,12 @@ Production: NOT DEPLOYED. No real payments, shipments, or approved products onli
 - Browser captures artifact: `adim-browser-viewport-captures`, artifact ID 12329925612 (homepage four widths + product 390px).
 - Previous browser failures revealed test WordPress asset URLs were incorrectly configured with `/adim-wordpress/` prefix. Fixed the CI test environment by explicitly setting `home` and `siteurl` to the PHP server root, and made nav JS DOM-ready safe. Latest validated run green.
 - Automated Chromium is **not** final visual review by the store owner, true mobile network performance or accessibility auditing with assistive devices.
+
+## PR #11 — customer cart → checkout guidance and fail-closed order guard (2026-10-21)
+- Draft [PR #11](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/11): `feat/checkout-journey-and-guards` -> `feat/mobile-catalog-shopping-ux` (depends on draft PR #10 -> PR #1; separate from physical POS #5–#9).
+- ADIM theme `inc/checkout.php` and `page.php`: 3-step customer journey on Woo native cart/checkout pages even when cart empty, honest sales-off notice, delivery method/payment explanation without inventing price/provider/pickup, native Woo totals remain authoritative.
+- ADIM operations plugin `includes/checkout-guard.php`: Store API `POST /wc/store/vN/checkout` rejected before order creation when `ADIM_ENABLE_SALES` is disabled; classic checkout validation also rejects. Cart products with revoked manual sale approval are blocked, including REST POST checkout with HTTP 409.
+- Real WordPress/WooCommerce/MySQL test `tests/checkout-journey.php` confirms default-off 403, authorized synthetic sample only, revoked product 409, and no additional Woo order. Checkout pages fixture is WP-CLI-only; no real gateway.
+- Browser test extension `tests/browser-mobile.mjs` checks 390px cart & checkout, unavailable-payment messaging, responsiveness and screenshots.
+- Early [run 39567936039](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39567936039): WooCommerce API/order-guard tests passed; check full browser outcome and last PR HEAD before claiming complete QA.
+- Payment processor sandbox, actual shipping-zone rates, lawful supply chain, legal/financial approvals, true browser checkout with a configured provider and persistent staging remain missing. Sales flags stay OFF.
