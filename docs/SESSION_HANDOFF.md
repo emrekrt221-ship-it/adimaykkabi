@@ -56,3 +56,12 @@ Copy/paste into new ChatGPT conversation: "GitHub'daki emrekrt221-ship-it/adimay
 - Root cause of earlier browser failures: disposable WP CLI installation wrote script URLs under unexpected `/adim-wordpress/`; the CI script sets `home` and `siteurl` to `http://127.0.0.1:8888`, and navigation initialization waits for DOM readiness. Do not change production URLs based on these test-specific corrections.
 - Browser CI uses Playwright 1.56.1 Chromium, checks 360/390/768/1280px, no horizontal page overflow and zero script errors; it is an automated smoke test, not full usability/SEO/performance certification.
 - Follow-up task: inspect captured screenshots, refine actual product photography and mobile category/checkout layout on staging; keep sales disabled.
+
+## 2026-10-21 newest UI development — PR #11
+- [Draft PR #11](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/11), branch `feat/checkout-journey-and-guards`, base `feat/mobile-catalog-shopping-ux`. Depends PR #10 -> PR #1; independent from deep physical POS/returns PR #5–#9. All these remain draft/unmerged at last check.
+- Native Woo cart/checkout render 3-step accessible guide in `page.php` even when cart empty or using Woo Blocks, honest purchase-disabled notice and accurate shipping/pickup information based only on Woo configured methods.
+- Theme: `inc/checkout.php`, `page.php`, `functions.php`, `assets/css/storefront.css`.
+- Plugin: `includes/checkout-guard.php`, plugin bootstrap. Fail-closed classic checkout and Store API POST checkout when `ADIM_ENABLE_SALES` OFF. Revoke approval in existing cart => blocked Store API.
+- Tests: `tests/checkout-journey.php`, `tests/checkout-pages-setup.php` (disposable CI only), updated Chromium `tests/browser-mobile.mjs` cart and checkout 390px, workflow.
+- [Run 39567936039](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39567936039): real WooCommerce guard stage PASSED; inspect final browser result and new HEAD CI before concluding.
+- Documentation `docs/CHECKOUT_JOURNEY.md`. Next: actual approved merchant gateway sandbox, Woo shipping/real pickup settings, guest checkout end-to-end with controlled stock and legal data. No payment credentials, deployments or sales switch changes.
