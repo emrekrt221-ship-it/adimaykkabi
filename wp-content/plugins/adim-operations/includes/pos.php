@@ -39,6 +39,20 @@ function adim_pos_ledger_table(): string
 }
 
 /**
+ * Test-only crash checkpoint.
+ *
+ * Available only in explicit WP-CLI runs with ADIM_POS_TEST_MODE=true.
+ * Never invoked during browser/production sales.
+ */
+function adim_pos_test_checkpoint(string $step, string $request_key, int $order_id = 0): void
+{
+    if (defined('WP_CLI') && WP_CLI
+        && defined('ADIM_POS_TEST_MODE') && ADIM_POS_TEST_MODE === true) {
+        do_action('adim_pos_test_checkpoint', $step, $request_key, $order_id);
+    }
+}
+
+/**
  * Physical sale with request-key idempotency and WooCommerce order-backed stock.
  *
  * The cashier confirms payment occurred outside the website, not via an online
@@ -95,6 +109,9 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
         return new WP_Error('adim_pos_duplicate', 'Bu işlem daha önce kaydedildi veya inceleme bekliyor.');
     }
 
+    // Abrupt process termination at this point must leave the idempotency key
+    // claimed, so a retry cannot create a second sale without reconciliation.
+    adim_pos_test_checkpoint('ledger_claimed', $request_key);
     $order = null;
     $stock_reduced = false;
     $reduce_attempted = false;
@@ -131,13 +148,19 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
         $order->update_meta_data('_adim_pos_operator_id', $operator_id);
         $order->calculate_totals();
         $order->save();
+        adim_pos_test_checkpoint('order_saved_before_link', $request_key, (int) $order->get_id());
 
-        $wpdb->update($table, ['order_id' => $order->get_id(), 'updated_at' => current_time('mysql', true)],
-            ['request_key' => $request_key], ['%d', '%s'], ['%s']);
+        $linked = $wpdb->update($table, ['order_id' => $order->get_id(), 'updated_at' => current_time('mysql', true)],
+            ['request_key' => $request_key, 'status' => 'processing'], ['%d', '%s'], ['%s', '%s']);
+        if ($linked !== 1) {
+            throw new RuntimeException('POS işlem anahtarı siparişe bağlanamadı.');
+        }
+        adim_pos_test_checkpoint('order_linked', $request_key, (int) $order->get_id());
 
         // WooCommerce ReserveStock performs InnoDB row locking and accounts for
         // stock held by online checkout; do NOT modify the _stock meta directly.
         wc_reserve_stock_for_order($order);
+        adim_pos_test_checkpoint('stock_reserved', $request_key, (int) $order->get_id());
 
         $reduce_attempted = true;
         wc_reduce_stock_levels($order->get_id());
@@ -154,7 +177,9 @@ function adim_pos_record_sale(string $sku, int $quantity, string $request_key, i
             }
         }
         $stock_reduced = true;
+        adim_pos_test_checkpoint('stock_reduced', $request_key, (int) $order->get_id());
         $order->update_status('completed', 'ADIM fiziki mağaza satışı; harici tahsilat personel tarafından teyit edildi.');
+        adim_pos_test_checkpoint('order_completed', $request_key, (int) $order->get_id());
         $saved = $wpdb->update($table,
             ['order_id' => $order->get_id(), 'status' => 'completed', 'updated_at' => current_time('mysql', true)],
             ['request_key' => $request_key, 'status' => 'processing'], ['%d', '%s', '%s'], ['%s', '%s']);
