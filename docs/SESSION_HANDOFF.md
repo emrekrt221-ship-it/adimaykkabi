@@ -43,3 +43,10 @@ Single-store footwear e-commerce: lightweight WordPress + WooCommerce, MySQL/HPO
 - Test `tests/pos-returns.php` covers positive/negative roles, duplicate, quantity, no stock/payment changes and UI markup. See `docs/POS_RETURNS.md`.
 - Initial real WooCommerce test run 39561531178 was green before UI; verify latest PR HEAD CI and fix failures. Do not merge/deploy unfinished functionality.
 - Next: secure real-browser flows for POS and returns, payment/fiscal and audited refund/restock separately. Merchandise licensing/brand sourcing and launch prerequisites outstanding.
+
+## Most recent PR #9: manager-confirmed inspected stock restoration
+- Open [draft PR #9](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/9), branch `feat/pos-reviewed-restock`, based on PR #8 branch `feat/pos-return-inspection`. Stacked chain #1 → #5 → #6 → #7 → #8 → #9, NONE merged at last check.
+- Manager-only `includes/pos-restock.php`: explicit separate `ADIM_ENABLE_RETURN_RESTOCK` flag (default OFF), unique return claim, WooCommerce native stock increment for accepted inspected SKU; replays yield existing result; unknown outcome never automatically retries. Woo refund entries and unauthorized/stock-untracked goods are rejected.
+- Manager screen `includes/pos-restock-admin.php` requires stock-count & condition checkboxes, 15+ character note, nonce; completed or uncertain movement is read-only. Cashier cannot restock.
+- Tests `tests/pos-restock.php`: true WooCommerce sale → return intake → manager inspection → explicit stock increase; repeats, blocked permissions, refunded order unchanged, denied/revoked product, failed movement and admin screen. Added to workflow. [CI 39563649293](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39563649293) SUCCESS (pre-doc commits). See `docs/POS_RESTOCK.md`.
+- Next: recheck latest PR #9 tests; focus customer-facing mobile WooCommerce storefront improvements as a separate PR based on `feat/mobile-storefront-foundation`, not on deep POS stack; add real phone/browser tests and Woo checkout sandbox only for legally authorized goods.
