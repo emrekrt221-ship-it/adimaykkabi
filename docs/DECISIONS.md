@@ -13,3 +13,5 @@ ADR-010 (2026-10-20): Keep WooCommerce-specific business logic in `adim-operatio
 ADR-011 (2026-10-20): PHP/JS syntax CI plus mocked hook smoke tests; functional/browser/payment tests remain required and cannot be inferred from lint or mocks.
 ADR-012 (2026-10-20): Work in feature branches with reviewable PRs; other chats must check GitHub branch and PR state and continue from updated handoff.
 ADR-013 (2026-10-20): Fail-closed sales deployment gate: `ADIM_ENABLE_SALES` defaults to disabled. Explicit private server configuration and launch approval required. An administrative review flag marks internal sourcing checks, but is never itself legal certification. WooCommerce API and direct URL behavior remains a staging test requirement.
+
+ADR-020 (2026-10-21): Customer catalog UX developed separately from stacked POS/returns work as draft PR #10 based on storefront PR #1. Native WooCommerce variation/cart paths, optional `pa_beden` filter with taxonomy validation, lean responsive CSS and real browser QA; no frontend reimplementation of inventory or payments.
