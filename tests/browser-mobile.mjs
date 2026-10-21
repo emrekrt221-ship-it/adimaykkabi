@@ -31,7 +31,21 @@ try {
     if (width <= 960) {
       const toggle = page.locator('.adim-menu-toggle');
       await toggle.waitFor({ state: 'visible' });
-      await page.waitForFunction(() => document.body.classList.contains('adim-js'));
+      try {
+        await page.waitForFunction(() => document.body.classList.contains('adim-js'),
+          null, { timeout: 7000 });
+      } catch (error) {
+        const debug = await page.evaluate(() => ({
+          bodyClass: document.body.className,
+          scriptSources: Array.from(document.querySelectorAll('script[src]'))
+            .map(script => script.src),
+          navExists: Boolean(document.getElementById('adim-primary-navigation')),
+          buttonExists: Boolean(document.querySelector('.adim-menu-toggle')),
+        }));
+        console.error('Mobile navigation initialization diagnostic:', JSON.stringify(debug));
+        console.error('JavaScript page errors:', JSON.stringify(errors));
+        throw error;
+      }
       assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
       await toggle.click();
       assert.equal(await toggle.getAttribute('aria-expanded'), 'true');
