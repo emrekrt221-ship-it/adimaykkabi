@@ -62,6 +62,19 @@ function adim_checkout_render_delivery_help(): void
     echo '</div>';
 }
 
+/**
+ * Avoid sending a shopper to checkout from a classic cart when all online
+ * sales are disabled. The server-side order guard remains authoritative.
+ * Woo block cart buttons require separate block-aware review.
+ */
+function adim_checkout_hide_proceed_when_closed(): void
+{
+    if (!function_exists('adim_ops_sales_enabled') || !adim_ops_sales_enabled()) {
+        remove_action('woocommerce_proceed_to_checkout', 'woocommerce_button_proceed_to_checkout', 20);
+    }
+}
+add_action('wp', 'adim_checkout_hide_proceed_when_closed', 20);
+
 /** Make user expectations explicit without inventing carrier or rate metadata. */
 add_action('woocommerce_review_order_before_payment', static function (): void {
     echo '<p class="adim-order-disclaimer">'
