@@ -63,3 +63,10 @@ Production: NOT DEPLOYED. No real payments, shipments, or approved products onli
 - Browser test extension `tests/browser-mobile.mjs` checks 390px cart & checkout, unavailable-payment messaging, responsiveness and screenshots.
 - Early [run 39567936039](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39567936039): WooCommerce API/order-guard tests passed; check full browser outcome and last PR HEAD before claiming complete QA.
 - Payment processor sandbox, actual shipping-zone rates, lawful supply chain, legal/financial approvals, true browser checkout with a configured provider and persistent staging remain missing. Sales flags stay OFF.
+
+## Checkout browser regression resolved — 2026-10-21
+- Earlier [run 39567936039](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39567936039) failed **only** at the browser step: it assumed an empty WooCommerce checkout page always displays checkout copy.
+- In this WooCommerce setup, opening checkout with an empty cart may redirect to the cart; the user should see the truthful sales-disabled notice there. The Playwright test now accepts either WooCommerce-supported state: checkout explanation shown, OR a same-store empty-checkout redirect back to cart with its notice.
+- [Run 39568663982](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663982) **SUCCESS**: PHP/WooCommerce/MySQL test suite, Store API POST 403 + revoked cart 409 + unchanged order count, actual HTTP, Chromium homepage/mobile navigation/product/cart/empty-checkout redirection and screenshots.
+- [Static checks 39568663927](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663927) **SUCCESS**. These runs are on code commit `ecf8a1f7`; docs-only commits will trigger newer runs before merge.
+- This tests CLOSED-SALES checkout, **not** a complete payable guest order, shipping, live payments or verified legal inventory. All production sales remain disabled.
