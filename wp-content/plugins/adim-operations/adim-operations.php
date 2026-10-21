@@ -15,6 +15,7 @@ require_once __DIR__ . '/includes/pos.php';
 require_once __DIR__ . '/includes/pos-admin.php';
 require_once __DIR__ . '/includes/pos-reconciliation.php';
 require_once __DIR__ . '/includes/pos-returns.php';
+require_once __DIR__ . '/includes/pos-return-admin.php';
 register_activation_hook(__FILE__, static function (): void {
     adim_pos_install();
     adim_pos_install_roles();
