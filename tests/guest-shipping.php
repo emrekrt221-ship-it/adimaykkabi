@@ -68,22 +68,25 @@ adim_guest_assert(abs((float) WC()->cart->get_shipping_total() - 59.0) < 0.001,
 adim_guest_assert(abs((float) WC()->cart->get_total('edit') - 3059.0) < 0.001,
     'guest subtotal + configured shipping is ₺3,059 with CI taxes disabled');
 
-// Verify no unsupported international delivery promise is displayed.
-WC()->customer->set_shipping_country('DE');
-WC()->customer->set_billing_country('DE');
-WC()->shipping()->reset_shipping();
-$outside = WC()->cart->get_shipping_packages();
+// Unsupported destinations cannot be selected in a Türkiye-only store.
+// Verify the shipping engine independently using an explicit foreign package:
+// customer setters can normalize invalid countries based on Woo settings.
+$allowed_countries = WC()->countries->get_shipping_countries();
+adim_guest_assert(!isset($allowed_countries['DE']),
+    'international shipping countries are not allowed at checkout');
+$outside = $packages;
+$outside[0]['destination']['country'] = 'DE';
+$outside[0]['destination']['state'] = '';
+$outside[0]['destination']['postcode'] = '10115';
+$outside[0]['destination']['city'] = 'Berlin';
 $outside_zone = wc_get_shipping_zone($outside[0]);
-adim_guest_assert($outside_zone->get_zone_name() !== $zone->get_zone_name(),
-    'unconfigured international country cannot match domestic zone');
+adim_guest_assert($outside_zone->get_id() !== $zone->get_id(),
+    'explicit unsupported destination does not match domestic shipping zone');
+WC()->shipping()->reset_shipping();
 WC()->shipping()->calculate_shipping($outside);
 $unavailable = WC()->shipping()->get_packages();
 adim_guest_assert(empty($unavailable[0]['rates']),
-    'no invented international shipping option when none is configured');
-
-// Restore guest destination for validation checks.
-WC()->customer->set_shipping_country('TR');
-WC()->customer->set_billing_country('TR');
+    'foreign test package has no configured delivery rate');
 $fields = WC()->checkout()->get_checkout_fields('billing');
 adim_guest_assert(!empty($fields['billing_first_name']['required'])
     && !empty($fields['billing_last_name']['required'])
