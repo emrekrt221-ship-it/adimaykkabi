@@ -15,6 +15,7 @@ Updated: 2026-10-21. **Read here before continuing in a new ChatGPT session.**
 - [PR #10 — mobile catalog and size filtering](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/10): `feat/mobile-catalog-shopping-ux` -> `feat/mobile-storefront-foundation` (PR #1). This branch deliberately excludes deep POS/returns code.
 - [PR #11 — WooCommerce cart/checkout guidance + Store API guard](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/11): `feat/checkout-journey-and-guards` -> `feat/mobile-catalog-shopping-ux` (#10). This is the most advanced CUSTOMER UI branch; distinct from POS #5–#9.
 - [PR #12 — Synthetic guest cart/shipping/browser QA](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/12): `test/guest-cart-shipping-flow` -> `feat/checkout-journey-and-guards` (#11). **Newest customer flow QA branch**; no real payment or shipping charges.
+- [PR #13 — Woo native guest address/field validation](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/13): `test/guest-address-validation` -> `test/guest-cart-shipping-flow` (#12). **Latest customer flow QA**; shipping/payment orders remain disabled in production.
 
 **All are drafts and unmerged at this snapshot.** GitHub's latest status takes precedence. Do not merge/rebase branches blindly; plan dependency order.
 
@@ -34,6 +35,9 @@ Updated: 2026-10-21. **Read here before continuing in a new ChatGPT session.**
 - PR #12 synthetic Woo guest cart/TRY domestic shipping (CI-only ₺3,000 subtotal + ₺59 shipping), 390px Chromium populated cart & address and zero orders/gateways: [run 39573581625](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39573581625) **PASS**; [code checks 39573581461](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39573581461) **PASS**. Newer documentation-only HEAD CI may still be in progress.
 - Newest client handoff: [PR #12 SESSION_HANDOFF.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/test/guest-cart-shipping-flow/docs/SESSION_HANDOFF.md) and [GUEST_SHIPPING_QA.md](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/test/guest-cart-shipping-flow/docs/GUEST_SHIPPING_QA.md).
 
+- PR #13: native WC_Checkout required first/last name/street/email and malformed email/phone/country validation inside disposable WP CLI; Chromium first-name Woo-required markup and invalid email, with **no Place Order**; [PR #13](https://github.com/emrekrt221-ship-it/adimaykkabi/pull/13). Latest CI should be reviewed at PR head before merge.
+- [PR #13 current handoff](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/test/guest-address-validation/docs/SESSION_HANDOFF.md) and [field validation QA](https://github.com/emrekrt221-ship-it/adimaykkabi/blob/test/guest-address-validation/docs/GUEST_ADDRESS_VALIDATION_QA.md).
+
 ## Release blockers
 - Both POS and online sales are **OFF** by default; `ADIM_ENABLE_POS`, `ADIM_ENABLE_SALES`, `ADIM_ENABLE_RETURN_INTAKE`, `ADIM_ENABLE_RETURN_RESTOCK` must stay OFF for live use until acceptance.
 - Product legal sourcing and trademark/design rights; no listings or sale of unauthorized counterfeit-marked goods.
@@ -41,4 +45,4 @@ Updated: 2026-10-21. **Read here before continuing in a new ChatGPT session.**
 - Genuine payable web checkout/order/shipment/customer-facing workflows still incomplete; PR #12 only simulates a guest checkout without submitting an order.
 
 ## New-chat resume prompt
-> GitHub'daki `emrekrt221-ship-it/adimaykkabi` projesine devam et. Önce ana dal `CURRENT_DEVELOPMENT.md` oku, açık PR #1/#5/#6/#7/#8/#9 ve paralel UI PR #10'u ve Actions sonuçlarını kontrol et. PR #9'daki stok işi ile PR #10'daki müşteri vitrini ayrı dallar; yapılanları tekrarlama. `docs/STATUS.md` ve `docs/SESSION_HANDOFF.md` dosyalarını ilgili aktif daldan oku. Eksik olan en yakın işi küçük PR'da geliştir, gerçek testleri çalıştır, devir belgelerini güncelle; gerçek ürünlerin satışını ve ödeme işlemlerini onaysız açma.
+> GitHub'daki `emrekrt221-ship-it/adimaykkabi` projesine devam et. Önce ana dal `CURRENT_DEVELOPMENT.md` oku, açık PR #1/#5/#6/#7/#8/#9 ve paralel UI PR #10/#11/#12/#13'ü ve Actions sonuçlarını kontrol et. PR #9'daki stok işi ile PR #10'daki müşteri vitrini ayrı dallar; yapılanları tekrarlama. `docs/STATUS.md` ve `docs/SESSION_HANDOFF.md` dosyalarını ilgili aktif daldan oku. Eksik olan en yakın işi küçük PR'da geliştir, gerçek testleri çalıştır, devir belgelerini güncelle; gerçek ürünlerin satışını ve ödeme işlemlerini onaysız açma.
