@@ -88,10 +88,16 @@ adim_guest_field_check(!in_array('billing_email_validation', $ok->get_error_code
 
 $missing = $baseline;
 $missing['billing_first_name'] = '';
+$missing['billing_last_name'] = '';
 $missing['billing_address_1'] = '';
+$missing['billing_email'] = '';
 $missing_errors = adim_validate_native_fields($checkout, $validate, $missing);
 adim_guest_field_check(in_array('billing_first_name_required', $missing_errors->get_error_codes(), true),
     'empty customer first name rejected by WooCommerce core');
+adim_guest_field_check(in_array('billing_last_name_required', $missing_errors->get_error_codes(), true),
+    'empty customer surname rejected by WooCommerce core');
+adim_guest_field_check(in_array('billing_email_required', $missing_errors->get_error_codes(), true),
+    'missing email rejected by WooCommerce core');
 adim_guest_field_check(in_array('billing_address_1_required', $missing_errors->get_error_codes(), true),
     'empty delivery/billing street rejected by WooCommerce core');
 
