@@ -15,17 +15,20 @@ require_once __DIR__ . '/includes/pos.php';
 require_once __DIR__ . '/includes/pos-admin.php';
 require_once __DIR__ . '/includes/pos-reconciliation.php';
 require_once __DIR__ . '/includes/pos-returns.php';
+require_once __DIR__ . '/includes/pos-restock.php';
 require_once __DIR__ . '/includes/pos-return-admin.php';
 register_activation_hook(__FILE__, static function (): void {
     adim_pos_install();
     adim_pos_install_roles();
     adim_return_install();
+    adim_restock_install();
 });
 add_action('init', 'adim_pos_install_roles', 20);
 add_action('admin_init', static function (): void {
     if (current_user_can('manage_woocommerce')) {
         if (get_option('adim_pos_db_version') !== '1') { adim_pos_install(); }
         if (get_option('adim_returns_db_version') !== '1') { adim_return_install(); }
+        if (get_option('adim_restock_db_version') !== '1') { adim_restock_install(); }
     }
 });
 
