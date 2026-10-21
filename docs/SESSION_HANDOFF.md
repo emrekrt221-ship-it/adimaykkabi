@@ -65,3 +65,14 @@ Copy/paste into new ChatGPT conversation: "GitHub'daki emrekrt221-ship-it/adimay
 - Tests: `tests/checkout-journey.php`, `tests/checkout-pages-setup.php` (disposable CI only), updated Chromium `tests/browser-mobile.mjs` cart and checkout 390px, workflow.
 - [Run 39567936039](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39567936039): real WooCommerce guard stage PASSED; inspect final browser result and new HEAD CI before concluding.
 - Documentation `docs/CHECKOUT_JOURNEY.md`. Next: actual approved merchant gateway sandbox, Woo shipping/real pickup settings, guest checkout end-to-end with controlled stock and legal data. No payment credentials, deployments or sales switch changes.
+
+## Last checked PR #11 browser CI / next turn (2026-10-21)
+
+## Checkout browser regression resolved — 2026-10-21
+- Earlier [run 39567936039](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39567936039) failed **only** at the browser step: it assumed an empty WooCommerce checkout page always displays checkout copy.
+- In this WooCommerce setup, opening checkout with an empty cart may redirect to the cart; the user should see the truthful sales-disabled notice there. The Playwright test now accepts either WooCommerce-supported state: checkout explanation shown, OR a same-store empty-checkout redirect back to cart with its notice.
+- [Run 39568663982](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663982) **SUCCESS**: PHP/WooCommerce/MySQL test suite, Store API POST 403 + revoked cart 409 + unchanged order count, actual HTTP, Chromium homepage/mobile navigation/product/cart/empty-checkout redirection and screenshots.
+- [Static checks 39568663927](https://github.com/emrekrt221-ship-it/adimaykkabi/actions/runs/39568663927) **SUCCESS**. These runs are on code commit `ecf8a1f7`; docs-only commits will trigger newer runs before merge.
+- This tests CLOSED-SALES checkout, **not** a complete payable guest order, shipping, live payments or verified legal inventory. All production sales remain disabled.
+
+Next: inspect latest draft PR #11 state and CI; then implement a disposable **synthetic** guest checkout/shipping address smoke (no card gateway, no real transactions), plus Woo REST cart add-item rejection tests. Keep WordPress/Woo built-in checkout; separate offline-test fixture only if needed. Document existing acceptance limits, never turn on production `ADIM_ENABLE_SALES`.
