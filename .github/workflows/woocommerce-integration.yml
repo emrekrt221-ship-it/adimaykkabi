@@ -65,3 +65,5 @@ jobs:
         run: php /tmp/wp-cli.phar eval-file "$GITHUB_WORKSPACE/tests/pos-reconciliation.php" --path=/tmp/adim-wordpress --allow-root
       - name: Test two real POS workers racing for the same stock
         run: bash tests/pos-concurrency.sh
+      - name: Simulate abrupt POS interruption at all six persistence boundaries
+        run: bash tests/pos-crash-tests.sh
